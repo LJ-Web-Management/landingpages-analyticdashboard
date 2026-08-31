@@ -1,0 +1,34 @@
+name: Fetch Ahrefs data
+
+on:
+  schedule:
+    # 08:15 UTC = 2:15am CST (winter) / 3:15am CDT (summer) — always after
+    # Ahrefs' own ~12:30am CT refresh and after 2am local time year-round.
+    - cron: "15 8 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch latest Ahrefs data
+        env:
+          AHREFS_API_KEY: ${{ secrets.AHREFS_API_KEY }}
+        run: node scripts/fetch-ahrefs.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/latest.json
+          git diff --cached --quiet && echo "No data changes." || git commit -m "Update Ahrefs data $(date -u +%Y-%m-%d)"
+          git push

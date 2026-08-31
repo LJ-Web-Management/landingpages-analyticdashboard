@@ -372,6 +372,12 @@
   .tooltip .t-row{ display:flex; align-items:center; gap:6px; }
   .tooltip .t-swatch{ width:7px; height:7px; border-radius:50%; flex:none; }
   .chart-wrap{ position: relative; }
+  .chart-empty{
+    height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; color: var(--text-muted); font-size: 13px;
+    padding: 0 20px;
+  }
 
   .bar-row{
     display:grid;
@@ -527,31 +533,22 @@
     }
     return out;
   }
-  function trailingDayDates(n){
-    var out = [];
-    var now = new Date();
-    for (var i=n-1;i>=0;i--){
-      out.push(isoDate(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()-i))));
-    }
-    return out;
-  }
   // Sample sites only ship a flat 12-point monthly trend; expand that into
   // the same {daily, monthly} history shape the live Ahrefs data uses, so
   // the range filter works identically whether data is live or sample.
+  // Daily is left empty on purpose: Ahrefs doesn't track Domain Rating or
+  // organic traffic at daily resolution for any of these sites (confirmed
+  // against the live API — daily-grouped history comes back empty even for
+  // domains with years of monthly history), so sample data shouldn't fake
+  // a granularity real data can never actually show.
   function synthHistory(monthlyDR, monthlyTraffic){
     var monthDates = trailingMonthDates(monthlyDR.length);
-    var dayDates = trailingDayDates(35);
-    var lastDR = monthlyDR[monthlyDR.length-1];
-    var lastTraffic = monthlyTraffic[monthlyTraffic.length-1];
     return {
       monthly: {
         dr: monthDates.map(function(d,i){ return { date: d, value: monthlyDR[i] }; }),
         traffic: monthDates.map(function(d,i){ return { date: d, value: monthlyTraffic[i] }; })
       },
-      daily: {
-        dr: dayDates.map(function(d){ return { date: d, value: lastDR }; }),
-        traffic: dayDates.map(function(d){ return { date: d, value: lastTraffic }; })
-      }
+      daily: { dr: [], traffic: [] }
     };
   }
 
@@ -1015,6 +1012,11 @@
   function buildMetricChart(container, siteList, metric, colorFor){
     var perSite = siteList.map(function(s){ return pointsFor(s, metric, state.range); });
     var grid = buildGrid(perSite);
+    if (!grid.length){
+      container.appendChild(el("div", "chart-empty",
+        "Ahrefs doesn&rsquo;t track this metric at daily resolution. Try 3M, 6M, 12M, or All."));
+      return;
+    }
     var labels = grid.map(function(d){ return fmtPointLabel(d, rangeOpt(state.range).granularity, state.range); });
     var series = siteList.map(function(s, i){
       return { name: s.name, color: colorFor(s), values: alignToGrid(perSite[i], grid) };

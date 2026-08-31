@@ -23,6 +23,13 @@ const LIVE_SITES = [
   { id: "stormwater", target: "stormwaterplanning.us" },
 ];
 
+// Floor for "all time" monthly history. Ahrefs just returns whatever it
+// actually has from here forward, so this only needs to predate every
+// site's real history — no need to keep it in sync with anything.
+const ALL_TIME_FROM = "2015-01-01";
+// Window for daily-resolution history, covering the 1D/1W/1M ranges.
+const DAILY_WINDOW_DAYS = 35;
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.join(__dirname, "..", "data", "latest.json");
 
@@ -30,10 +37,9 @@ function isoDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
-function monthsAgo(n) {
+function daysAgo(n) {
   const d = new Date();
-  d.setUTCDate(1); // avoid month-length rollover surprises
-  d.setUTCMonth(d.getUTCMonth() - n);
+  d.setUTCDate(d.getUTCDate() - n);
   return d;
 }
 
@@ -54,33 +60,51 @@ async function ahrefsGet(pathname, params) {
   return res.json();
 }
 
-// Reduce a monthly-grouped history array to exactly 12 points (oldest -> newest),
-// padding the front by repeating the earliest known value if the domain's
-// history is shorter than 12 months.
-function last12(rows, dateKey, valueKey) {
-  const sorted = [...rows].sort((a, b) => a[dateKey].localeCompare(b[dateKey]));
-  const values = sorted.map((r) => Number(r[valueKey]) || 0);
-  const trimmed = values.slice(-12);
-  while (trimmed.length < 12) trimmed.unshift(trimmed[0] ?? 0);
-  return trimmed;
+// Normalizes a history array into sorted {date, value} points.
+function toPoints(rows, dateKey, valueKey) {
+  return rows
+    .map((r) => ({ date: r[dateKey], value: Number(r[valueKey]) || 0 }))
+    .sort((a, b) => a.date.localeCompare(b.date));
 }
 
 async function fetchSite({ id, target }) {
   const today = isoDate(new Date());
-  const from = isoDate(monthsAgo(12));
+  const dailyFrom = isoDate(daysAgo(DAILY_WINDOW_DAYS));
 
-  const [drHistory, trafficHistory, snapshot, refDomains, topKeywords] = await Promise.all([
+  const [
+    drMonthly,
+    drDaily,
+    trafficMonthly,
+    trafficDaily,
+    snapshot,
+    refDomains,
+    topKeywords,
+  ] = await Promise.all([
     ahrefsGet("/site-explorer/domain-rating-history", {
       target,
-      date_from: from,
+      date_from: ALL_TIME_FROM,
       date_to: today,
       history_grouping: "monthly",
     }),
+    ahrefsGet("/site-explorer/domain-rating-history", {
+      target,
+      date_from: dailyFrom,
+      date_to: today,
+      history_grouping: "daily",
+    }),
     ahrefsGet("/site-explorer/metrics-history", {
       target,
-      date_from: from,
+      date_from: ALL_TIME_FROM,
       date_to: today,
       history_grouping: "monthly",
+      mode: "subdomains",
+      select: "date,org_traffic",
+    }),
+    ahrefsGet("/site-explorer/metrics-history", {
+      target,
+      date_from: dailyFrom,
+      date_to: today,
+      history_grouping: "daily",
       mode: "subdomains",
       select: "date,org_traffic",
     }),
@@ -104,16 +128,18 @@ async function fetchSite({ id, target }) {
     }),
   ]);
 
-  const drTrend = last12(drHistory.domain_ratings ?? [], "date", "domain_rating");
-  const trafficTrend = last12(trafficHistory.metrics ?? [], "date", "org_traffic");
+  const drMonthlyPts = toPoints(drMonthly.domain_ratings ?? [], "date", "domain_rating");
+  const drDailyPts = toPoints(drDaily.domain_ratings ?? [], "date", "domain_rating");
+  const trafficMonthlyPts = toPoints(trafficMonthly.metrics ?? [], "date", "org_traffic");
+  const trafficDailyPts = toPoints(trafficDaily.metrics ?? [], "date", "org_traffic");
+
+  const latestDR = drDailyPts.at(-1)?.value ?? drMonthlyPts.at(-1)?.value ?? 0;
 
   return {
     id,
     asOf: today,
-    dr: drTrend[drTrend.length - 1] ?? 0,
-    drTrend,
-    organicTraffic: snapshot.metrics?.org_traffic ?? trafficTrend[trafficTrend.length - 1] ?? 0,
-    trafficTrend,
+    dr: latestDR,
+    organicTraffic: snapshot.metrics?.org_traffic ?? trafficDailyPts.at(-1)?.value ?? 0,
     organicKeywords: snapshot.metrics?.org_keywords ?? 0,
     referringDomains: refDomains.metrics?.live_refdomains ?? 0,
     keywords: (topKeywords.keywords ?? [])
@@ -124,6 +150,10 @@ async function fetchSite({ id, target }) {
         vol: k.volume ?? 0,
         traffic: k.sum_traffic ?? 0,
       })),
+    history: {
+      monthly: { dr: drMonthlyPts, traffic: trafficMonthlyPts },
+      daily: { dr: drDailyPts, traffic: trafficDailyPts },
+    },
   };
 }
 

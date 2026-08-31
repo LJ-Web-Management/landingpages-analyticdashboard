@@ -518,82 +518,125 @@
 (function(){
   "use strict";
 
-  function trailingMonths(n){
+  function isoDate(d){ return d.toISOString().slice(0,10); }
+  function trailingMonthDates(n){
     var out = [];
-    var d = new Date();
-    d.setUTCDate(1);
+    var now = new Date();
     for (var i=n-1;i>=0;i--){
-      var dt = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth()-i, 1));
-      out.push(dt.toLocaleDateString("en-US",{month:"short", timeZone:"UTC"}));
+      out.push(isoDate(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()-i, 1))));
     }
     return out;
   }
-  var MONTHS = trailingMonths(12);
+  function trailingDayDates(n){
+    var out = [];
+    var now = new Date();
+    for (var i=n-1;i>=0;i--){
+      out.push(isoDate(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()-i))));
+    }
+    return out;
+  }
+  // Sample sites only ship a flat 12-point monthly trend; expand that into
+  // the same {daily, monthly} history shape the live Ahrefs data uses, so
+  // the range filter works identically whether data is live or sample.
+  function synthHistory(monthlyDR, monthlyTraffic){
+    var monthDates = trailingMonthDates(monthlyDR.length);
+    var dayDates = trailingDayDates(35);
+    var lastDR = monthlyDR[monthlyDR.length-1];
+    var lastTraffic = monthlyTraffic[monthlyTraffic.length-1];
+    return {
+      monthly: {
+        dr: monthDates.map(function(d,i){ return { date: d, value: monthlyDR[i] }; }),
+        traffic: monthDates.map(function(d,i){ return { date: d, value: monthlyTraffic[i] }; })
+      },
+      daily: {
+        dr: dayDates.map(function(d){ return { date: d, value: lastDR }; }),
+        traffic: dayDates.map(function(d){ return { date: d, value: lastTraffic }; })
+      }
+    };
+  }
 
   var SITES = [
     {
       id: "mold", name: "Mold Training", domain: "moldtraining.us", colorVar: "--site-mold",
       seo: {
-        dr: 24, drTrend: [21,21,22,22,23,23,23,24,24,24,24,24],
-        organicTraffic: 3200, trafficTrend: [2600,2700,2750,2800,2900,2950,3000,3050,3100,3150,3180,3200],
-        organicKeywords: 410, referringDomains: 86,
+        dr: 24, organicTraffic: 3200, organicKeywords: 410, referringDomains: 86,
         keywords: [
           { k: "mold inspector certification", pos: 3, vol: 720, traffic: 210 },
           { k: "mold remediation training online", pos: 5, vol: 480, traffic: 95 },
           { k: "IICRC mold course", pos: 2, vol: 260, traffic: 88 },
           { k: "how to become a mold inspector", pos: 9, vol: 590, traffic: 41 }
-        ]
+        ],
+        history: synthHistory(
+          [21,21,22,22,23,23,23,24,24,24,24,24],
+          [2600,2700,2750,2800,2900,2950,3000,3050,3100,3150,3180,3200]
+        )
       }
     },
     {
       id: "confined", name: "Confined Space", domain: "confined-space.com", colorVar: "--site-confined",
       seo: {
-        dr: 0, drTrend: [0,0,0,0,0,0,0,0,0,0,0,0],
-        organicTraffic: 0, trafficTrend: [0,0,0,0,0,0,0,0,0,0,0,0],
-        organicKeywords: 0, referringDomains: 336,
+        dr: 0, organicTraffic: 0, organicKeywords: 0, referringDomains: 336,
         referringDomainsNote: "336 linking domains — mostly low-quality paid-backlink packages; Ahrefs discounts them, which is why Domain Rating stays at 0",
-        keywords: []
+        keywords: [],
+        history: synthHistory(
+          [0,0,0,0,0,0,0,0,0,0,0,0],
+          [0,0,0,0,0,0,0,0,0,0,0,0]
+        )
       }
     },
     {
       id: "excavation", name: "Excavation, Trenching & Shoring", domain: "excavationtrenchingshoring.com", colorVar: "--site-excavation",
       seo: {
-        dr: 19, drTrend: [16,17,17,17,18,18,18,19,19,19,19,19],
-        organicTraffic: 2100, trafficTrend: [1700,1750,1800,1850,1880,1900,1950,1980,2000,2050,2080,2100],
-        organicKeywords: 290, referringDomains: 54,
+        dr: 19, organicTraffic: 2100, organicKeywords: 290, referringDomains: 54,
         keywords: [
           { k: "trenching and shoring training", pos: 3, vol: 390, traffic: 88 },
           { k: "competent person excavation", pos: 5, vol: 320, traffic: 61 },
           { k: "OSHA excavation safety course", pos: 7, vol: 410, traffic: 48 },
           { k: "trench collapse prevention training", pos: 11, vol: 180, traffic: 14 }
-        ]
+        ],
+        history: synthHistory(
+          [16,17,17,17,18,18,18,19,19,19,19,19],
+          [1700,1750,1800,1850,1880,1900,1950,1980,2000,2050,2080,2100]
+        )
       }
     },
     {
       id: "stormwater", name: "Stormwater Planning", domain: "stormwaterplanning.us", colorVar: "--site-stormwater",
       seo: {
-        dr: 27, drTrend: [23,24,24,25,25,26,26,26,27,27,27,27],
-        organicTraffic: 4300, trafficTrend: [3400,3500,3600,3700,3800,3900,3980,4050,4120,4200,4250,4300],
-        organicKeywords: 380, referringDomains: 97,
+        dr: 27, organicTraffic: 4300, organicKeywords: 380, referringDomains: 97,
         keywords: [
           { k: "SWPPP training course", pos: 2, vol: 610, traffic: 175 },
           { k: "stormwater pollution prevention plan template", pos: 8, vol: 940, traffic: 82 },
           { k: "qualified SWPPP practitioner", pos: 3, vol: 210, traffic: 64 },
           { k: "stormwater compliance training", pos: 6, vol: 260, traffic: 39 }
-        ]
+        ],
+        history: synthHistory(
+          [23,24,24,25,25,26,26,26,27,27,27,27],
+          [3400,3500,3600,3700,3800,3900,3980,4050,4120,4200,4250,4300]
+        )
       }
     }
   ];
 
-  var state = { active: "all", range: 12 };
+  var state = { active: "all", range: "12m" };
 
   var RANGE_OPTIONS = [
-    { key: 3, label: "3M" },
-    { key: 6, label: "6M" },
-    { key: 12, label: "12M" }
+    { key: "1d", label: "1D", granularity: "daily", count: 2 },
+    { key: "1w", label: "1W", granularity: "daily", count: 7 },
+    { key: "1m", label: "1M", granularity: "daily", count: 30 },
+    { key: "3m", label: "3M", granularity: "monthly", count: 3 },
+    { key: "6m", label: "6M", granularity: "monthly", count: 6 },
+    { key: "12m", label: "12M", granularity: "monthly", count: 12 },
+    { key: "all", label: "All", granularity: "monthly", count: Infinity }
   ];
-  function sliceRange(arr, n){ return arr.slice(Math.max(0, arr.length - n)); }
-  function rangeLabel(n){ return "last " + n + " month" + (n===1?"":"s"); }
+  var RANGE_TEXT = {
+    "1d": "last day", "1w": "last week", "1m": "last month",
+    "3m": "last 3 months", "6m": "last 6 months", "12m": "last 12 months", "all": "all time"
+  };
+  var RANGE_SUFFIX = {
+    "1d": "1d", "1w": "7d", "1m": "30d", "3m": "3mo", "6m": "6mo", "12m": "12mo", "all": "all-time"
+  };
+  function rangeOpt(key){ return RANGE_OPTIONS.filter(function(o){ return o.key === key; })[0]; }
 
   /* ---------- helpers ---------- */
   function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
@@ -613,23 +656,65 @@
   }
   function siteById(id){ for (var i=0;i<SITES.length;i++) if (SITES[i].id===id) return SITES[i]; return null; }
 
+  /* ---------- history helpers (date-keyed points power the range filter) ---------- */
+  function pointsFor(site, metric, rangeKey){
+    var opt = rangeOpt(rangeKey);
+    var pts = (site.seo.history && site.seo.history[opt.granularity] && site.seo.history[opt.granularity][metric]) || [];
+    pts = pts.slice().sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+    if (isFinite(opt.count)) pts = pts.slice(Math.max(0, pts.length - opt.count));
+    return pts;
+  }
+  function buildGrid(pointArrays){
+    var set = {};
+    pointArrays.forEach(function(pts){ pts.forEach(function(p){ set[p.date] = true; }); });
+    return Object.keys(set).sort();
+  }
+  function alignPoint(pts, date){
+    for (var i=0;i<pts.length;i++) if (pts[i].date === date) return pts[i].value;
+    return null;
+  }
+  function alignToGrid(pts, grid){
+    return grid.map(function(d){ return alignPoint(pts, d); });
+  }
+  function fmtPointLabel(iso, granularity, rangeKey){
+    var d = new Date(iso + "T00:00:00Z");
+    if (granularity === "daily"){
+      return new Intl.DateTimeFormat("en-US", { month:"short", day:"numeric", timeZone:"UTC" }).format(d);
+    }
+    var opts = { month:"short", timeZone:"UTC" };
+    if (rangeKey === "all") opts.year = "2-digit";
+    return new Intl.DateTimeFormat("en-US", opts).format(d);
+  }
+
+  // Combined history for "All Sites": mean Domain Rating, summed traffic,
+  // per date. Sites can have different history depths (esp. for "all
+  // time"), so this is grid-aligned rather than assumed index-aligned.
+  function combineGranularity(granularity){
+    var drSets = SITES.map(function(s){ return (s.seo.history[granularity] && s.seo.history[granularity].dr) || []; });
+    var trafficSets = SITES.map(function(s){ return (s.seo.history[granularity] && s.seo.history[granularity].traffic) || []; });
+    var drGrid = buildGrid(drSets);
+    var trafficGrid = buildGrid(trafficSets);
+    var dr = drGrid.map(function(date){
+      var vals = drSets.map(function(pts){ return alignPoint(pts, date); }).filter(function(v){ return v != null; });
+      return { date: date, value: vals.length ? vals.reduce(function(a,b){ return a+b; }, 0) / vals.length : null };
+    });
+    var traffic = trafficGrid.map(function(date){
+      var vals = trafficSets.map(function(pts){ return alignPoint(pts, date); });
+      return { date: date, value: vals.reduce(function(a,b){ return a + (b==null?0:b); }, 0) };
+    });
+    return { dr: dr, traffic: traffic };
+  }
+
   /* aggregate across all sites for combined view */
   function aggregate(){
     var n = SITES.length;
     var sumSeo = { dr:0, organicTraffic:0, organicKeywords:0, referringDomains:0 };
-    var drTrend = new Array(12).fill(0);
-    var trafficTrend = new Array(12).fill(0);
     SITES.forEach(function(s){
       sumSeo.dr += s.seo.dr;
       sumSeo.organicTraffic += s.seo.organicTraffic;
       sumSeo.organicKeywords += s.seo.organicKeywords;
       sumSeo.referringDomains += s.seo.referringDomains;
-      for (var i=0;i<12;i++){
-        drTrend[i] += s.seo.drTrend[i];
-        trafficTrend[i] += s.seo.trafficTrend[i];
-      }
     });
-    for (var i=0;i<12;i++) drTrend[i] = drTrend[i]/n;
     var allKeywords = [];
     SITES.forEach(function(s){
       s.seo.keywords.slice(0,2).forEach(function(k){ allKeywords.push(Object.assign({ site:s }, k)); });
@@ -639,10 +724,10 @@
       id: "all", name: "All Sites Combined", domain: SITES.length + " sites",
       colorVar: "--accent",
       seo: {
-        dr: sumSeo.dr / n, drTrend: drTrend,
-        organicTraffic: sumSeo.organicTraffic, trafficTrend: trafficTrend,
-        organicKeywords: sumSeo.organicKeywords, referringDomains: sumSeo.referringDomains,
-        keywords: allKeywords
+        dr: sumSeo.dr / n,
+        organicTraffic: sumSeo.organicTraffic, organicKeywords: sumSeo.organicKeywords, referringDomains: sumSeo.referringDomains,
+        keywords: allKeywords,
+        history: { daily: combineGranularity("daily"), monthly: combineGranularity("monthly") }
       }
     };
   }
@@ -716,20 +801,21 @@
   function renderSeoKpis(data, color){
     var wrap = document.getElementById("seoKpis");
     wrap.innerHTML = "";
-    var drWindow = sliceRange(data.seo.drTrend, state.range);
-    var trafficWindow = sliceRange(data.seo.trafficTrend, state.range);
-    var d0 = drWindow[0], d1 = data.seo.dr;
-    var t0 = trafficWindow[0], t1 = data.seo.organicTraffic;
-    var drDelta = d1 - d0;
-    var trafficDelta = pct(t0, t1);
-    var drDeltaText = Math.abs(drDelta) > 0.05 ? (Math.abs(drDelta).toFixed(1) + " pts / " + state.range + "mo") : null;
-    var trafficDeltaText = Math.abs(trafficDelta) > 0.05 ? (Math.abs(trafficDelta).toFixed(0) + "% / " + state.range + "mo") : null;
+    var drVals = pointsFor(data, "dr", state.range).map(function(p){ return p.value; }).filter(function(v){ return v != null; });
+    var trafficVals = pointsFor(data, "traffic", state.range).map(function(p){ return p.value; }).filter(function(v){ return v != null; });
+    var d0 = drVals.length ? drVals[0] : null, d1 = data.seo.dr;
+    var t0 = trafficVals.length ? trafficVals[0] : null, t1 = data.seo.organicTraffic;
+    var drDelta = d0 != null ? d1 - d0 : 0;
+    var trafficDelta = t0 != null ? pct(t0, t1) : 0;
+    var suffix = RANGE_SUFFIX[state.range];
+    var drDeltaText = (d0 != null && Math.abs(drDelta) > 0.05) ? (Math.abs(drDelta).toFixed(1) + " pts / " + suffix) : null;
+    var trafficDeltaText = (t0 != null && Math.abs(trafficDelta) > 0.05) ? (Math.abs(trafficDelta).toFixed(0) + "% / " + suffix) : null;
     var drSub = (data.liveSeo && data.seoAsOf) ? ("as of " + fmtAsOf(data.seoAsOf)) : null;
 
     wrap.appendChild(kpiTile("Domain Rating", data.seo.dr.toFixed(state.active==="all"?1:0),
-      drDeltaText, drDelta>=0?"up":"down", drSub, drWindow, color));
+      drDeltaText, drDelta>=0?"up":"down", drSub, drVals.length > 1 ? drVals : null, color));
     wrap.appendChild(kpiTile("Organic Traffic / mo", fmtInt(data.seo.organicTraffic),
-      trafficDeltaText, trafficDelta>=0?"up":"down", "estimated visits", trafficWindow, color));
+      trafficDeltaText, trafficDelta>=0?"up":"down", "estimated visits", trafficVals.length > 1 ? trafficVals : null, color));
     wrap.appendChild(kpiTile("Organic Keywords", fmtInt(data.seo.organicKeywords), null, null, "ranking in top 100"));
     wrap.appendChild(kpiTile("Referring Domains", fmtInt(data.seo.referringDomains), null, null, data.seo.referringDomainsNote || "unique linking domains"));
   }
@@ -743,18 +829,32 @@
   /* ---------- line chart with hover ---------- */
   function buildLineChart(container, series, opts){
     opts = opts || {};
-    var labels = opts.labels || MONTHS;
+    var labels = opts.labels;
     var w = 520, h = 200, padL = 40, padR = 14, padT = 14, padB = 24;
     var innerW = w - padL - padR, innerH = h - padT - padB;
 
     var allVals = [];
-    series.forEach(function(s){ allVals = allVals.concat(s.values); });
+    series.forEach(function(s){ allVals = allVals.concat(s.values.filter(function(v){ return v != null; })); });
+    if (!allVals.length) allVals = [0, 1];
     var min = Math.min.apply(null, allVals), max = Math.max.apply(null, allVals);
     var span = max - min || 1;
     min -= span*0.08; max += span*0.08;
 
     function xAt(i){ return padL + (labels.length===1 ? 0.5 : i/(labels.length-1)) * innerW; }
     function yAt(v){ return padT + innerH - ((v-min)/(max-min)) * innerH; }
+    function segments(pts){
+      var out = [], cur = [];
+      pts.forEach(function(p){
+        if (p == null){ if (cur.length) out.push(cur); cur = []; }
+        else cur.push(p);
+      });
+      if (cur.length) out.push(cur);
+      return out;
+    }
+    function lastNonNull(pts){
+      for (var i=pts.length-1;i>=0;i--) if (pts[i]) return pts[i];
+      return null;
+    }
 
     var svgns = "http://www.w3.org/2000/svg";
     var svg = document.createElementNS(svgns, "svg");
@@ -771,17 +871,17 @@
       line.setAttribute("y1", gy); line.setAttribute("y2", gy);
       line.setAttribute("class", "gridline");
       svg.appendChild(line);
-      var val = max - (span_full(min,max)/gridCount)*g;
+      var val = max - ((max-min)/gridCount)*g;
       var label = document.createElementNS(svgns, "text");
       label.setAttribute("x", 2); label.setAttribute("y", gy+3);
       label.setAttribute("class", "axis-label");
       label.textContent = opts.yFormat ? opts.yFormat(val) : Math.round(val);
       svg.appendChild(label);
     }
-    function span_full(a,b){ return b-a; }
 
+    var labelStep = labels.length > 8 ? Math.ceil(labels.length/8) : 1;
     labels.forEach(function(m, i){
-      if (i % (labels.length > 8 ? 2 : 1) !== 0 && i !== labels.length-1) return;
+      if (i % labelStep !== 0 && i !== labels.length-1) return;
       var t = document.createElementNS(svgns, "text");
       t.setAttribute("x", xAt(i)); t.setAttribute("y", h-4);
       t.setAttribute("class", "axis-label");
@@ -792,44 +892,55 @@
 
     series.forEach(function(s){
       var gradId = "grad-" + Math.random().toString(36).slice(2);
-      var defs = document.createElementNS(svgns, "defs");
-      var grad = document.createElementNS(svgns, "linearGradient");
-      grad.setAttribute("id", gradId);
-      grad.setAttribute("x1","0"); grad.setAttribute("y1","0"); grad.setAttribute("x2","0"); grad.setAttribute("y2","1");
-      var stop1 = document.createElementNS(svgns,"stop"); stop1.setAttribute("offset","0%"); stop1.setAttribute("stop-color", s.color); stop1.setAttribute("stop-opacity","0.22");
-      var stop2 = document.createElementNS(svgns,"stop"); stop2.setAttribute("offset","100%"); stop2.setAttribute("stop-color", s.color); stop2.setAttribute("stop-opacity","0");
-      grad.appendChild(stop1); grad.appendChild(stop2);
-      defs.appendChild(grad); svg.appendChild(defs);
+      var pts = s.values.map(function(v,i){ return v == null ? null : [xAt(i), yAt(v)]; });
+      var segs = segments(pts);
 
-      var pts = s.values.map(function(v,i){ return [xAt(i), yAt(v)]; });
-      var linePath = "M" + pts.map(function(p){ return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" L");
-      var areaPath = linePath + " L" + pts[pts.length-1][0].toFixed(1) + "," + (padT+innerH) + " L" + pts[0][0].toFixed(1) + "," + (padT+innerH) + " Z";
+      if (series.length === 1 && segs.length){
+        var defs = document.createElementNS(svgns, "defs");
+        var grad = document.createElementNS(svgns, "linearGradient");
+        grad.setAttribute("id", gradId);
+        grad.setAttribute("x1","0"); grad.setAttribute("y1","0"); grad.setAttribute("x2","0"); grad.setAttribute("y2","1");
+        var stop1 = document.createElementNS(svgns,"stop"); stop1.setAttribute("offset","0%"); stop1.setAttribute("stop-color", s.color); stop1.setAttribute("stop-opacity","0.22");
+        var stop2 = document.createElementNS(svgns,"stop"); stop2.setAttribute("offset","100%"); stop2.setAttribute("stop-color", s.color); stop2.setAttribute("stop-opacity","0");
+        grad.appendChild(stop1); grad.appendChild(stop2);
+        defs.appendChild(grad); svg.appendChild(defs);
 
-      if (series.length === 1){
-        var area = document.createElementNS(svgns, "path");
-        area.setAttribute("d", areaPath);
-        area.setAttribute("fill", "url(#"+gradId+")");
-        area.setAttribute("stroke", "none");
-        svg.appendChild(area);
+        segs.forEach(function(seg){
+          if (seg.length < 2) return;
+          var linePath = "M" + seg.map(function(p){ return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" L");
+          var areaPath = linePath + " L" + seg[seg.length-1][0].toFixed(1) + "," + (padT+innerH) + " L" + seg[0][0].toFixed(1) + "," + (padT+innerH) + " Z";
+          var area = document.createElementNS(svgns, "path");
+          area.setAttribute("d", areaPath);
+          area.setAttribute("fill", "url(#"+gradId+")");
+          area.setAttribute("stroke", "none");
+          svg.appendChild(area);
+        });
       }
 
-      var path = document.createElementNS(svgns, "path");
-      path.setAttribute("d", linePath);
-      path.setAttribute("fill", "none");
-      path.setAttribute("stroke", s.color);
-      path.setAttribute("stroke-width", "2.25");
-      path.setAttribute("stroke-linecap", "round");
-      path.setAttribute("stroke-linejoin", "round");
-      svg.appendChild(path);
+      segs.forEach(function(seg){
+        var d = seg.length === 1
+          ? "M" + seg[0][0].toFixed(1) + "," + seg[0][1].toFixed(1)
+          : "M" + seg.map(function(p){ return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" L");
+        var path = document.createElementNS(svgns, "path");
+        path.setAttribute("d", d);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", s.color);
+        path.setAttribute("stroke-width", "2.25");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        svg.appendChild(path);
+      });
 
-      var endPt = pts[pts.length-1];
-      var endDot = document.createElementNS(svgns, "circle");
-      endDot.setAttribute("cx", endPt[0]); endDot.setAttribute("cy", endPt[1]);
-      endDot.setAttribute("r", "4.5");
-      endDot.setAttribute("fill", s.color);
-      endDot.setAttribute("stroke", cssVar("--surface"));
-      endDot.setAttribute("stroke-width", "2");
-      svg.appendChild(endDot);
+      var lastPt = lastNonNull(pts);
+      if (lastPt){
+        var endDot = document.createElementNS(svgns, "circle");
+        endDot.setAttribute("cx", lastPt[0]); endDot.setAttribute("cy", lastPt[1]);
+        endDot.setAttribute("r", "4.5");
+        endDot.setAttribute("fill", s.color);
+        endDot.setAttribute("stroke", cssVar("--surface"));
+        endDot.setAttribute("stroke-width", "2");
+        svg.appendChild(endDot);
+      }
 
       s._pts = pts;
     });
@@ -873,8 +984,14 @@
       hoverLine.setAttribute("x1", hx); hoverLine.setAttribute("x2", hx);
       hoverLine.setAttribute("opacity","1");
       var html = "<div style='font-weight:600;margin-bottom:3px;'>" + labels[idx] + "</div>";
+      var anyRow = false;
       series.forEach(function(s, si){
         var pt = s._pts[idx];
+        if (!pt){
+          hoverDots[si].setAttribute("opacity","0");
+          return;
+        }
+        anyRow = true;
         hoverDots[si].setAttribute("cx", pt[0]); hoverDots[si].setAttribute("cy", pt[1]);
         hoverDots[si].setAttribute("opacity","1");
         var v = s.values[idx];
@@ -882,7 +999,7 @@
           s.name + ": <strong>" + (opts.yFormat ? opts.yFormat(v) : fmtInt(v)) + "</strong></div>";
       });
       tooltip.innerHTML = html;
-      tooltip.classList.add("visible");
+      tooltip.classList.toggle("visible", anyRow);
       var boundRect = chartWrap.getBoundingClientRect();
       var tipX = (hx/w) * boundRect.width;
       tooltip.style.left = tipX + "px";
@@ -895,35 +1012,41 @@
     });
   }
 
+  function buildMetricChart(container, siteList, metric, colorFor){
+    var perSite = siteList.map(function(s){ return pointsFor(s, metric, state.range); });
+    var grid = buildGrid(perSite);
+    var labels = grid.map(function(d){ return fmtPointLabel(d, rangeOpt(state.range).granularity, state.range); });
+    var series = siteList.map(function(s, i){
+      return { name: s.name, color: colorFor(s), values: alignToGrid(perSite[i], grid) };
+    });
+    buildLineChart(container, series, {
+      ariaLabel: (metric === "dr" ? "Domain rating" : "Organic traffic") + " trend",
+      yFormat: metric === "dr" ? function(v){ return fmtFixed(v, 0); } : fmtInt,
+      labels: labels
+    });
+  }
+
   function renderSeoCharts(data, color){
     var wrap = document.getElementById("seoCharts");
     wrap.innerHTML = "";
-    var labels = sliceRange(MONTHS, state.range);
-    var rangeText = rangeLabel(state.range);
+    var rangeText = RANGE_TEXT[state.range];
+    var combined = state.active === "all";
+    var siteList = combined ? SITES : [data];
+    var colorFor = combined ? function(s){ return cssVar(s.colorVar); } : function(){ return color; };
 
-    if (state.active === "all"){
-      var card1 = el("div", "card");
-      card1.appendChild(el("div","card-title","Organic traffic by site — " + rangeText));
-      buildLineChart(card1, SITES.map(function(s){ return { name: s.name, color: cssVar(s.colorVar), values: sliceRange(s.seo.trafficTrend, state.range) }; }),
-        { ariaLabel: "Organic traffic by site", yFormat: fmtInt, labels: labels });
-      wrap.appendChild(card1);
+    var card1 = el("div", "card");
+    card1.appendChild(el("div","card-title", combined
+      ? ("Organic traffic by site — " + rangeText)
+      : ("Organic traffic <span class='unit'>— " + rangeText + "</span>")));
+    buildMetricChart(card1, siteList, "traffic", colorFor);
+    wrap.appendChild(card1);
 
-      var card2 = el("div", "card");
-      card2.appendChild(el("div","card-title","Domain Rating by site — " + rangeText));
-      buildLineChart(card2, SITES.map(function(s){ return { name: s.name, color: cssVar(s.colorVar), values: sliceRange(s.seo.drTrend, state.range) }; }),
-        { ariaLabel: "Domain rating by site", yFormat: function(v){ return fmtFixed(v, 0); }, labels: labels });
-      wrap.appendChild(card2);
-    } else {
-      var c1 = el("div","card");
-      c1.appendChild(el("div","card-title","Organic traffic <span class='unit'>— " + rangeText + "</span>"));
-      buildLineChart(c1, [{ name: data.name, color: color, values: sliceRange(data.seo.trafficTrend, state.range) }], { ariaLabel:"Organic traffic trend", yFormat: fmtInt, labels: labels });
-      wrap.appendChild(c1);
-
-      var c2 = el("div","card");
-      c2.appendChild(el("div","card-title","Domain Rating <span class='unit'>— " + rangeText + "</span>"));
-      buildLineChart(c2, [{ name: data.name, color: color, values: sliceRange(data.seo.drTrend, state.range) }], { ariaLabel:"Domain rating trend", yFormat: function(v){ return fmtFixed(v, 0); }, labels: labels });
-      wrap.appendChild(c2);
-    }
+    var card2 = el("div", "card");
+    card2.appendChild(el("div","card-title", combined
+      ? ("Domain Rating by site — " + rangeText)
+      : ("Domain Rating <span class='unit'>— " + rangeText + "</span>")));
+    buildMetricChart(card2, siteList, "dr", colorFor);
+    wrap.appendChild(card2);
   }
 
   function renderRangeTabs(){
@@ -1036,10 +1159,10 @@
           var live = sites[id];
           if (!site || !live) return;
           site.seo = {
-            dr: live.dr, drTrend: live.drTrend,
-            organicTraffic: live.organicTraffic, trafficTrend: live.trafficTrend,
+            dr: live.dr, organicTraffic: live.organicTraffic,
             organicKeywords: live.organicKeywords, referringDomains: live.referringDomains,
-            keywords: live.keywords || []
+            keywords: live.keywords || [],
+            history: live.history || { daily: {dr:[],traffic:[]}, monthly: {dr:[],traffic:[]} }
           };
           site.liveSeo = true;
           site.seoAsOf = live.asOf;

@@ -529,11 +529,6 @@
   }
   var MONTHS = trailingMonths(12);
 
-  // Site ids whose Search Visibility numbers get overwritten with live
-  // Ahrefs data (see data/latest.json, produced by scripts/fetch-ahrefs.mjs
-  // on a daily GitHub Actions schedule). Everyone else stays sample data.
-  var LIVE_SITE_IDS = ["confined", "excavation"];
-
   var SITES = [
     {
       id: "mold", name: "Mold Training", domain: "moldtraining.us", colorVar: "--site-mold",

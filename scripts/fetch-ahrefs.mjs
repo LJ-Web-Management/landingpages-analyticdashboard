@@ -17,8 +17,10 @@ if (!API_KEY) {
 // Sites currently wired up for live Ahrefs data. Add more entries here
 // (matching the `id` used in index.html's SITES array) when ready.
 const LIVE_SITES = [
+  { id: "mold", target: "moldtraining.us" },
   { id: "confined", target: "confined-space.com" },
   { id: "excavation", target: "excavationtrenchingshoring.com" },
+  { id: "stormwater", target: "stormwaterplanning.us" },
 ];
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

@@ -488,6 +488,7 @@
     <h2 id="seoHeading">Search Visibility</h2>
     <span class="section-note" id="seoSourceNote">Source: Ahrefs (sample)</span>
   </div>
+  <div class="metric-tabs" id="rangeTabs" role="tablist" aria-label="Date range"></div>
   <div class="kpi-grid" id="seoKpis"></div>
 
   <div class="chart-grid" style="margin-top:16px;" id="seoCharts"></div>
@@ -523,7 +524,7 @@
     d.setUTCDate(1);
     for (var i=n-1;i>=0;i--){
       var dt = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth()-i, 1));
-      out.push(dt.toLocaleDateString("en-US",{month:"short"}));
+      out.push(dt.toLocaleDateString("en-US",{month:"short", timeZone:"UTC"}));
     }
     return out;
   }
@@ -584,7 +585,15 @@
     }
   ];
 
-  var state = { active: "all" };
+  var state = { active: "all", range: 12 };
+
+  var RANGE_OPTIONS = [
+    { key: 3, label: "3M" },
+    { key: 6, label: "6M" },
+    { key: 12, label: "12M" }
+  ];
+  function sliceRange(arr, n){ return arr.slice(Math.max(0, arr.length - n)); }
+  function rangeLabel(n){ return "last " + n + " month" + (n===1?"":"s"); }
 
   /* ---------- helpers ---------- */
   function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
@@ -707,18 +716,20 @@
   function renderSeoKpis(data, color){
     var wrap = document.getElementById("seoKpis");
     wrap.innerHTML = "";
-    var d0 = data.seo.drTrend[0], d1 = data.seo.dr;
-    var t0 = data.seo.trafficTrend[0], t1 = data.seo.organicTraffic;
+    var drWindow = sliceRange(data.seo.drTrend, state.range);
+    var trafficWindow = sliceRange(data.seo.trafficTrend, state.range);
+    var d0 = drWindow[0], d1 = data.seo.dr;
+    var t0 = trafficWindow[0], t1 = data.seo.organicTraffic;
     var drDelta = d1 - d0;
     var trafficDelta = pct(t0, t1);
-    var drDeltaText = Math.abs(drDelta) > 0.05 ? (Math.abs(drDelta).toFixed(1) + " pts / 12mo") : null;
-    var trafficDeltaText = Math.abs(trafficDelta) > 0.05 ? (Math.abs(trafficDelta).toFixed(0) + "% / 12mo") : null;
+    var drDeltaText = Math.abs(drDelta) > 0.05 ? (Math.abs(drDelta).toFixed(1) + " pts / " + state.range + "mo") : null;
+    var trafficDeltaText = Math.abs(trafficDelta) > 0.05 ? (Math.abs(trafficDelta).toFixed(0) + "% / " + state.range + "mo") : null;
     var drSub = (data.liveSeo && data.seoAsOf) ? ("as of " + fmtAsOf(data.seoAsOf)) : null;
 
     wrap.appendChild(kpiTile("Domain Rating", data.seo.dr.toFixed(state.active==="all"?1:0),
-      drDeltaText, drDelta>=0?"up":"down", drSub, data.seo.drTrend, color));
+      drDeltaText, drDelta>=0?"up":"down", drSub, drWindow, color));
     wrap.appendChild(kpiTile("Organic Traffic / mo", fmtInt(data.seo.organicTraffic),
-      trafficDeltaText, trafficDelta>=0?"up":"down", "estimated visits", data.seo.trafficTrend, color));
+      trafficDeltaText, trafficDelta>=0?"up":"down", "estimated visits", trafficWindow, color));
     wrap.appendChild(kpiTile("Organic Keywords", fmtInt(data.seo.organicKeywords), null, null, "ranking in top 100"));
     wrap.appendChild(kpiTile("Referring Domains", fmtInt(data.seo.referringDomains), null, null, data.seo.referringDomainsNote || "unique linking domains"));
   }
@@ -732,6 +743,7 @@
   /* ---------- line chart with hover ---------- */
   function buildLineChart(container, series, opts){
     opts = opts || {};
+    var labels = opts.labels || MONTHS;
     var w = 520, h = 200, padL = 40, padR = 14, padT = 14, padB = 24;
     var innerW = w - padL - padR, innerH = h - padT - padB;
 
@@ -741,7 +753,7 @@
     var span = max - min || 1;
     min -= span*0.08; max += span*0.08;
 
-    function xAt(i){ return padL + (i/(MONTHS.length-1)) * innerW; }
+    function xAt(i){ return padL + (labels.length===1 ? 0.5 : i/(labels.length-1)) * innerW; }
     function yAt(v){ return padT + innerH - ((v-min)/(max-min)) * innerH; }
 
     var svgns = "http://www.w3.org/2000/svg";
@@ -768,12 +780,12 @@
     }
     function span_full(a,b){ return b-a; }
 
-    MONTHS.forEach(function(m, i){
-      if (i % (MONTHS.length > 8 ? 2 : 1) !== 0 && i !== MONTHS.length-1) return;
+    labels.forEach(function(m, i){
+      if (i % (labels.length > 8 ? 2 : 1) !== 0 && i !== labels.length-1) return;
       var t = document.createElementNS(svgns, "text");
       t.setAttribute("x", xAt(i)); t.setAttribute("y", h-4);
       t.setAttribute("class", "axis-label");
-      t.setAttribute("text-anchor", i===0 ? "start" : (i===MONTHS.length-1 ? "end" : "middle"));
+      t.setAttribute("text-anchor", i===0 ? "start" : (i===labels.length-1 ? "end" : "middle"));
       t.textContent = m;
       svg.appendChild(t);
     });
@@ -855,12 +867,12 @@
       var rect = svg.getBoundingClientRect();
       var scaleX = w / rect.width;
       var mx = (e.clientX - rect.left) * scaleX;
-      var idx = Math.round(((mx - padL) / innerW) * (MONTHS.length-1));
-      idx = Math.max(0, Math.min(MONTHS.length-1, idx));
+      var idx = Math.round(((mx - padL) / innerW) * (labels.length-1));
+      idx = Math.max(0, Math.min(labels.length-1, idx));
       var hx = xAt(idx);
       hoverLine.setAttribute("x1", hx); hoverLine.setAttribute("x2", hx);
       hoverLine.setAttribute("opacity","1");
-      var html = "<div style='font-weight:600;margin-bottom:3px;'>" + MONTHS[idx] + "</div>";
+      var html = "<div style='font-weight:600;margin-bottom:3px;'>" + labels[idx] + "</div>";
       series.forEach(function(s, si){
         var pt = s._pts[idx];
         hoverDots[si].setAttribute("cx", pt[0]); hoverDots[si].setAttribute("cy", pt[1]);
@@ -886,30 +898,39 @@
   function renderSeoCharts(data, color){
     var wrap = document.getElementById("seoCharts");
     wrap.innerHTML = "";
+    var labels = sliceRange(MONTHS, state.range);
+    var rangeText = rangeLabel(state.range);
 
     if (state.active === "all"){
       var card1 = el("div", "card");
-      card1.appendChild(el("div","card-title","Organic traffic by site — last 12 months"));
-      buildLineChart(card1, SITES.map(function(s){ return { name: s.name, color: cssVar(s.colorVar), values: s.seo.trafficTrend }; }),
-        { ariaLabel: "Organic traffic by site", yFormat: fmtInt });
+      card1.appendChild(el("div","card-title","Organic traffic by site — " + rangeText));
+      buildLineChart(card1, SITES.map(function(s){ return { name: s.name, color: cssVar(s.colorVar), values: sliceRange(s.seo.trafficTrend, state.range) }; }),
+        { ariaLabel: "Organic traffic by site", yFormat: fmtInt, labels: labels });
       wrap.appendChild(card1);
 
       var card2 = el("div", "card");
-      card2.appendChild(el("div","card-title","Domain Rating by site — last 12 months"));
-      buildLineChart(card2, SITES.map(function(s){ return { name: s.name, color: cssVar(s.colorVar), values: s.seo.drTrend }; }),
-        { ariaLabel: "Domain rating by site", yFormat: function(v){ return fmtFixed(v, 0); } });
+      card2.appendChild(el("div","card-title","Domain Rating by site — " + rangeText));
+      buildLineChart(card2, SITES.map(function(s){ return { name: s.name, color: cssVar(s.colorVar), values: sliceRange(s.seo.drTrend, state.range) }; }),
+        { ariaLabel: "Domain rating by site", yFormat: function(v){ return fmtFixed(v, 0); }, labels: labels });
       wrap.appendChild(card2);
     } else {
       var c1 = el("div","card");
-      c1.appendChild(el("div","card-title","Organic traffic <span class='unit'>— last 12 months</span>"));
-      buildLineChart(c1, [{ name: data.name, color: color, values: data.seo.trafficTrend }], { ariaLabel:"Organic traffic trend", yFormat: fmtInt });
+      c1.appendChild(el("div","card-title","Organic traffic <span class='unit'>— " + rangeText + "</span>"));
+      buildLineChart(c1, [{ name: data.name, color: color, values: sliceRange(data.seo.trafficTrend, state.range) }], { ariaLabel:"Organic traffic trend", yFormat: fmtInt, labels: labels });
       wrap.appendChild(c1);
 
       var c2 = el("div","card");
-      c2.appendChild(el("div","card-title","Domain Rating <span class='unit'>— last 12 months</span>"));
-      buildLineChart(c2, [{ name: data.name, color: color, values: data.seo.drTrend }], { ariaLabel:"Domain rating trend", yFormat: function(v){ return fmtFixed(v, 0); } });
+      c2.appendChild(el("div","card-title","Domain Rating <span class='unit'>— " + rangeText + "</span>"));
+      buildLineChart(c2, [{ name: data.name, color: color, values: sliceRange(data.seo.drTrend, state.range) }], { ariaLabel:"Domain rating trend", yFormat: function(v){ return fmtFixed(v, 0); }, labels: labels });
       wrap.appendChild(c2);
     }
+  }
+
+  function renderRangeTabs(){
+    renderMetricTabs(document.getElementById("rangeTabs"), RANGE_OPTIONS, state.range, function(key){
+      state.range = key;
+      render();
+    });
   }
 
   /* ---------- comparison bar charts (All Sites view) ---------- */
@@ -1068,6 +1089,7 @@
     }
     document.getElementById("seoSourceNote").textContent = seoNote;
 
+    renderRangeTabs();
     renderSeoKpis(data, color);
     renderSeoCharts(data, color);
     renderCompareCards();

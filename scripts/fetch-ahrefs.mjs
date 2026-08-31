@@ -2,7 +2,7 @@
 // Run by .github/workflows/fetch-ahrefs-data.yml on a daily schedule.
 // Requires env var AHREFS_API_KEY (a GitHub Actions secret in CI).
 
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -137,6 +137,7 @@ async function main() {
     sites,
   };
 
+  await mkdir(path.dirname(OUT_PATH), { recursive: true });
   await writeFile(OUT_PATH, JSON.stringify(payload, null, 2) + "\n", "utf8");
   console.log(`Wrote ${OUT_PATH} for sites: ${Object.keys(sites).join(", ")}`);
 }

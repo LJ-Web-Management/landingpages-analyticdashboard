@@ -1,0 +1,153 @@
+{
+  "generatedAt": "2026-08-31T21:18:56.898Z",
+  "sites": {
+    "mold": {
+      "id": "mold",
+      "asOf": "2026-08-31",
+      "dr": 0,
+      "drTrend": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "organicTraffic": 0,
+      "trafficTrend": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "organicKeywords": 0,
+      "referringDomains": 267,
+      "keywords": []
+    },
+    "confined": {
+      "id": "confined",
+      "asOf": "2026-08-31",
+      "dr": 0,
+      "drTrend": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "organicTraffic": 0,
+      "trafficTrend": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "organicKeywords": 0,
+      "referringDomains": 311,
+      "keywords": []
+    },
+    "excavation": {
+      "id": "excavation",
+      "asOf": "2026-08-31",
+      "dr": 0,
+      "drTrend": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "organicTraffic": 0,
+      "trafficTrend": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "organicKeywords": 0,
+      "referringDomains": 274,
+      "keywords": []
+    },
+    "stormwater": {
+      "id": "stormwater",
+      "asOf": "2026-08-31",
+      "dr": 0,
+      "drTrend": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "organicTraffic": 0,
+      "trafficTrend": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "organicKeywords": 0,
+      "referringDomains": 288,
+      "keywords": []
+    }
+  }
+}

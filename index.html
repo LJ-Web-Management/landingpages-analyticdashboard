@@ -993,10 +993,22 @@
   }
 
   /* ---------- live Ahrefs data ---------- */
+  var lastGeneratedAt = null;
+
+  function formatAsOf(iso){
+    var d = iso ? new Date(iso) : new Date();
+    return new Intl.DateTimeFormat("en-US", {
+      month: "long", day: "numeric", year: "numeric",
+      hour: "numeric", minute: "2-digit",
+      timeZone: "America/Chicago", timeZoneName: "short"
+    }).format(d);
+  }
+
   function loadLiveData(){
     return fetch("data/latest.json", { cache: "no-store" })
       .then(function(res){ if (!res.ok) throw new Error("no data file"); return res.json(); })
       .then(function(payload){
+        lastGeneratedAt = (payload && payload.generatedAt) || null;
         var sites = (payload && payload.sites) || {};
         Object.keys(sites).forEach(function(id){
           var site = siteById(id);
@@ -1063,11 +1075,11 @@
   }
 
   function init(){
-    var now = new Date();
-    document.getElementById("asOfDate").textContent = now.toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
+    document.getElementById("asOfDate").textContent = formatAsOf(null);
     document.getElementById("footerSites").textContent = SITES.map(function(s){ return s.domain; }).join(" · ");
     window.addEventListener("resize", function(){ /* svg is viewBox-scaled, no rebuild needed */ });
     loadLiveData().then(function(){
+      document.getElementById("asOfDate").textContent = formatAsOf(lastGeneratedAt);
       updateSampleBanner();
       renderSelector();
       render();

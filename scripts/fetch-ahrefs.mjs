@@ -2,7 +2,7 @@
 // Run by .github/workflows/fetch-ahrefs-data.yml on a daily schedule.
 // Requires env var AHREFS_API_KEY (a GitHub Actions secret in CI).
 
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -43,6 +43,17 @@ function daysAgo(n) {
   return d;
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Ahrefs occasionally returns a transient 500 (seen 2026-09-14: a single
+// flaky metrics-history call aborted the whole day's fetch for every site).
+// Retry server-side errors with backoff; a 4xx means retrying won't help,
+// so those fail immediately.
+const MAX_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 2000;
+
 async function ahrefsGet(pathname, params) {
   const url = new URL(API_BASE + pathname);
   for (const [k, v] of Object.entries(params)) {
@@ -50,14 +61,24 @@ async function ahrefsGet(pathname, params) {
   }
   url.searchParams.set("output", "json");
 
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${API_KEY}`, Accept: "application/json" },
-  });
-  if (!res.ok) {
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    let res;
+    try {
+      res = await fetch(url, {
+        headers: { Authorization: `Bearer ${API_KEY}`, Accept: "application/json" },
+      });
+    } catch (err) {
+      if (attempt === MAX_ATTEMPTS) throw err;
+      await sleep(RETRY_DELAY_MS * attempt);
+      continue;
+    }
+    if (res.ok) return res.json();
+
     const body = await res.text().catch(() => "");
-    throw new Error(`Ahrefs ${pathname} -> ${res.status} ${res.statusText}: ${body.slice(0, 300)}`);
+    const err = new Error(`Ahrefs ${pathname} -> ${res.status} ${res.statusText}: ${body.slice(0, 300)}`);
+    if (res.status < 500 || attempt === MAX_ATTEMPTS) throw err;
+    await sleep(RETRY_DELAY_MS * attempt);
   }
-  return res.json();
 }
 
 // Normalizes a history array into sorted {date, value} points.
@@ -157,10 +178,45 @@ async function fetchSite({ id, target }) {
   };
 }
 
+async function loadExistingSites() {
+  try {
+    const raw = await readFile(OUT_PATH, "utf8");
+    return JSON.parse(raw).sites ?? {};
+  } catch {
+    return {};
+  }
+}
+
 async function main() {
-  const results = await Promise.all(LIVE_SITES.map(fetchSite));
+  // Load yesterday's data first so a site that still fails after retries
+  // can fall back to its last-known values instead of losing the day
+  // entirely (or, before this fix, aborting every other site's refresh too
+  // since they all ran under one Promise.all).
+  const existingSites = await loadExistingSites();
+
+  const settled = await Promise.allSettled(LIVE_SITES.map(fetchSite));
   const sites = {};
-  for (const r of results) sites[r.id] = r;
+  const failedIds = [];
+
+  settled.forEach((result, i) => {
+    const { id } = LIVE_SITES[i];
+    if (result.status === "fulfilled") {
+      sites[id] = result.value;
+      return;
+    }
+    failedIds.push(id);
+    console.error(`Site "${id}" failed to fetch: ${result.reason}`);
+    if (existingSites[id]) {
+      sites[id] = { ...existingSites[id], stale: true };
+      console.warn(`Site "${id}": reusing data from ${existingSites[id].asOf} instead.`);
+    } else {
+      console.warn(`Site "${id}": no previous data to fall back on — omitted from this run.`);
+    }
+  });
+
+  if (!Object.keys(sites).length) {
+    throw new Error("Every site failed to fetch and none had previous data to fall back on.");
+  }
 
   const payload = {
     generatedAt: new Date().toISOString(),
@@ -170,9 +226,17 @@ async function main() {
   await mkdir(path.dirname(OUT_PATH), { recursive: true });
   await writeFile(OUT_PATH, JSON.stringify(payload, null, 2) + "\n", "utf8");
   console.log(`Wrote ${OUT_PATH} for sites: ${Object.keys(sites).join(", ")}`);
+
+  if (failedIds.length) {
+    // Still exit non-zero so the workflow (and its failure email) flags
+    // this run — the data is saved either way, this just keeps the alert
+    // as an early-warning signal for genuinely broken sites/keys.
+    console.error(`${failedIds.length} site(s) failed this run: ${failedIds.join(", ")}`);
+    process.exitCode = 1;
+  }
 }
 
 main().catch((err) => {
   console.error(err);
-  process.exit(1);
+  process.exitCode = 1;
 });

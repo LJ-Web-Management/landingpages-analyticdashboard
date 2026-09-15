@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-09-13T13:18:46.984Z",
+  "generatedAt": "2026-09-15T03:04:13.166Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-09-13",
+      "asOf": "2026-09-15",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 265,
+      "referringDomains": 287,
       "keywords": [],
       "history": {
         "monthly": {
@@ -22,11 +22,11 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-09-13",
+      "asOf": "2026-09-15",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 290,
+      "referringDomains": 317,
       "keywords": [],
       "history": {
         "monthly": {
@@ -627,11 +627,11 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-09-13",
+      "asOf": "2026-09-15",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 260,
+      "referringDomains": 284,
       "keywords": [],
       "history": {
         "monthly": {
@@ -679,6 +679,14 @@
             },
             {
               "date": "2026-09-12T00:00:00Z",
+              "value": 0
+            },
+            {
+              "date": "2026-09-13T00:00:00Z",
+              "value": 0
+            },
+            {
+              "date": "2026-09-14T00:00:00Z",
               "value": 0
             }
           ],
@@ -688,11 +696,11 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-09-13",
+      "asOf": "2026-09-15",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 266,
+      "referringDomains": 287,
       "keywords": [],
       "history": {
         "monthly": {
@@ -740,6 +748,14 @@
             },
             {
               "date": "2026-09-12T00:00:00Z",
+              "value": 0
+            },
+            {
+              "date": "2026-09-13T00:00:00Z",
+              "value": 0
+            },
+            {
+              "date": "2026-09-14T00:00:00Z",
               "value": 0
             }
           ],

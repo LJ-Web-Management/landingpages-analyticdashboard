@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-09-23T13:39:22.319Z",
+  "generatedAt": "2026-09-24T13:33:28.580Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-09-23",
+      "asOf": "2026-09-24",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 398,
+      "referringDomains": 406,
       "keywords": [],
       "history": {
         "monthly": {
@@ -22,11 +22,11 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-09-23",
+      "asOf": "2026-09-24",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 655,
+      "referringDomains": 675,
       "keywords": [],
       "history": {
         "monthly": {
@@ -623,11 +623,11 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-09-23",
+      "asOf": "2026-09-24",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 378,
+      "referringDomains": 381,
       "keywords": [],
       "history": {
         "monthly": {
@@ -715,6 +715,10 @@
             },
             {
               "date": "2026-09-22T00:00:00Z",
+              "value": 0
+            },
+            {
+              "date": "2026-09-23T00:00:00Z",
               "value": 0
             }
           ],
@@ -724,11 +728,11 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-09-23",
+      "asOf": "2026-09-24",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 392,
+      "referringDomains": 399,
       "keywords": [],
       "history": {
         "monthly": {
@@ -816,6 +820,10 @@
             },
             {
               "date": "2026-09-22T00:00:00Z",
+              "value": 0
+            },
+            {
+              "date": "2026-09-23T00:00:00Z",
               "value": 0
             }
           ],

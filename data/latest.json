@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-09-27T13:59:06.384Z",
+  "generatedAt": "2026-09-28T16:45:38.065Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-09-27",
+      "asOf": "2026-09-28",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 1,
-      "referringDomains": 721,
+      "referringDomains": 762,
       "keywords": [
         {
           "k": "osha mold fact sheet",
@@ -36,6 +36,10 @@
             {
               "date": "2026-09-27T00:00:00Z",
               "value": 0
+            },
+            {
+              "date": "2026-09-28T00:00:00Z",
+              "value": 0
             }
           ]
         }
@@ -43,11 +47,11 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-09-27",
+      "asOf": "2026-09-28",
       "dr": 0,
       "organicTraffic": 1,
       "organicKeywords": 1,
-      "referringDomains": 704,
+      "referringDomains": 754,
       "keywords": [
         {
           "k": "confined space roles",
@@ -865,6 +869,10 @@
             {
               "date": "2026-09-27T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-09-28T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -872,11 +880,11 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-09-27",
+      "asOf": "2026-09-28",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 389,
+      "referringDomains": 393,
       "keywords": [],
       "history": {
         "monthly": {
@@ -980,6 +988,10 @@
             },
             {
               "date": "2026-09-26T00:00:00Z",
+              "value": 0
+            },
+            {
+              "date": "2026-09-27T00:00:00Z",
               "value": 0
             }
           ],
@@ -989,11 +1001,11 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-09-27",
+      "asOf": "2026-09-28",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 399,
+      "referringDomains": 400,
       "keywords": [],
       "history": {
         "monthly": {
@@ -1097,6 +1109,10 @@
             },
             {
               "date": "2026-09-26T00:00:00Z",
+              "value": 0
+            },
+            {
+              "date": "2026-09-27T00:00:00Z",
               "value": 0
             }
           ],

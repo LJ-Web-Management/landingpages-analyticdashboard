@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-09-28T16:45:38.065Z",
+  "generatedAt": "2026-09-29T14:51:11.551Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-09-28",
+      "asOf": "2026-09-29",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 1,
-      "referringDomains": 762,
+      "referringDomains": 899,
       "keywords": [
         {
           "k": "osha mold fact sheet",
@@ -40,6 +40,10 @@
             {
               "date": "2026-09-28T00:00:00Z",
               "value": 0
+            },
+            {
+              "date": "2026-09-29T00:00:00Z",
+              "value": 0
             }
           ]
         }
@@ -47,12 +51,18 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-09-28",
+      "asOf": "2026-09-29",
       "dr": 0,
-      "organicTraffic": 1,
-      "organicKeywords": 1,
-      "referringDomains": 754,
+      "organicTraffic": 6,
+      "organicKeywords": 2,
+      "referringDomains": 896,
       "keywords": [
+        {
+          "k": "confined space attendant requirements",
+          "pos": 1,
+          "vol": 10,
+          "traffic": 5
+        },
         {
           "k": "confined space roles",
           "pos": 8,
@@ -851,7 +861,7 @@
             },
             {
               "date": "2026-09-01T00:00:00Z",
-              "value": 1
+              "value": 3
             }
           ]
         },
@@ -872,7 +882,11 @@
             },
             {
               "date": "2026-09-28T00:00:00Z",
-              "value": 1
+              "value": 6
+            },
+            {
+              "date": "2026-09-29T00:00:00Z",
+              "value": 6
             }
           ]
         }
@@ -880,12 +894,19 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-09-28",
+      "asOf": "2026-09-29",
       "dr": 0,
-      "organicTraffic": 0,
-      "organicKeywords": 0,
-      "referringDomains": 393,
-      "keywords": [],
+      "organicTraffic": 1,
+      "organicKeywords": 1,
+      "referringDomains": 435,
+      "keywords": [
+        {
+          "k": "sloping excavation",
+          "pos": 8,
+          "vol": 40,
+          "traffic": 1
+        }
+      ],
       "history": {
         "monthly": {
           "dr": [
@@ -894,7 +915,12 @@
               "value": 0
             }
           ],
-          "traffic": []
+          "traffic": [
+            {
+              "date": "2026-09-01T00:00:00Z",
+              "value": 1
+            }
+          ]
         },
         "daily": {
           "dr": [
@@ -993,19 +1019,28 @@
             {
               "date": "2026-09-27T00:00:00Z",
               "value": 0
+            },
+            {
+              "date": "2026-09-28T00:00:00Z",
+              "value": 0
             }
           ],
-          "traffic": []
+          "traffic": [
+            {
+              "date": "2026-09-29T00:00:00Z",
+              "value": 1
+            }
+          ]
         }
       }
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-09-28",
+      "asOf": "2026-09-29",
       "dr": 0,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 400,
+      "referringDomains": 446,
       "keywords": [],
       "history": {
         "monthly": {
@@ -1113,6 +1148,10 @@
             },
             {
               "date": "2026-09-27T00:00:00Z",
+              "value": 0
+            },
+            {
+              "date": "2026-09-28T00:00:00Z",
               "value": 0
             }
           ],

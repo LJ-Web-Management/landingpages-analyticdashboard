@@ -1,14 +1,20 @@
 {
-  "generatedAt": "2026-09-29T14:51:11.551Z",
+  "generatedAt": "2026-09-30T14:56:02.458Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-09-29",
+      "asOf": "2026-09-30",
       "dr": 0,
-      "organicTraffic": 0,
-      "organicKeywords": 1,
-      "referringDomains": 899,
+      "organicTraffic": 1,
+      "organicKeywords": 2,
+      "referringDomains": 933,
       "keywords": [
+        {
+          "k": "mold remediation certificate of completion",
+          "pos": 8,
+          "vol": 20,
+          "traffic": 1
+        },
         {
           "k": "osha mold fact sheet",
           "pos": 8,
@@ -22,7 +28,7 @@
           "traffic": [
             {
               "date": "2026-09-01T00:00:00Z",
-              "value": 0
+              "value": 1
             }
           ]
         },
@@ -43,7 +49,11 @@
             },
             {
               "date": "2026-09-29T00:00:00Z",
-              "value": 0
+              "value": 1
+            },
+            {
+              "date": "2026-09-30T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -51,12 +61,18 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-09-29",
+      "asOf": "2026-09-30",
       "dr": 0,
-      "organicTraffic": 6,
-      "organicKeywords": 2,
-      "referringDomains": 896,
+      "organicTraffic": 16,
+      "organicKeywords": 3,
+      "referringDomains": 947,
       "keywords": [
+        {
+          "k": "confined space training requirements",
+          "pos": 5,
+          "vol": 150,
+          "traffic": 10
+        },
         {
           "k": "confined space attendant requirements",
           "pos": 1,
@@ -861,7 +877,7 @@
             },
             {
               "date": "2026-09-01T00:00:00Z",
-              "value": 3
+              "value": 5
             }
           ]
         },
@@ -887,6 +903,10 @@
             {
               "date": "2026-09-29T00:00:00Z",
               "value": 6
+            },
+            {
+              "date": "2026-09-30T00:00:00Z",
+              "value": 16
             }
           ]
         }
@@ -894,17 +914,23 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-09-29",
-      "dr": 0,
-      "organicTraffic": 1,
-      "organicKeywords": 1,
-      "referringDomains": 435,
+      "asOf": "2026-09-30",
+      "dr": 0.2,
+      "organicTraffic": 2,
+      "organicKeywords": 2,
+      "referringDomains": 449,
       "keywords": [
         {
           "k": "sloping excavation",
           "pos": 8,
           "vol": 40,
           "traffic": 1
+        },
+        {
+          "k": "spoil pile excavation",
+          "pos": 3,
+          "vol": 0,
+          "traffic": 0
         }
       ],
       "history": {
@@ -918,7 +944,7 @@
           "traffic": [
             {
               "date": "2026-09-01T00:00:00Z",
-              "value": 1
+              "value": 2
             }
           ]
         },
@@ -1023,12 +1049,20 @@
             {
               "date": "2026-09-28T00:00:00Z",
               "value": 0
+            },
+            {
+              "date": "2026-09-29T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
             {
               "date": "2026-09-29T00:00:00Z",
-              "value": 1
+              "value": 2
+            },
+            {
+              "date": "2026-09-30T00:00:00Z",
+              "value": 2
             }
           ]
         }
@@ -1036,11 +1070,11 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-09-29",
-      "dr": 0,
+      "asOf": "2026-09-30",
+      "dr": 0.2,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 446,
+      "referringDomains": 459,
       "keywords": [],
       "history": {
         "monthly": {
@@ -1153,6 +1187,10 @@
             {
               "date": "2026-09-28T00:00:00Z",
               "value": 0
+            },
+            {
+              "date": "2026-09-29T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": []

@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-09-30T14:56:02.458Z",
+  "generatedAt": "2026-10-01T15:27:35.197Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-09-30",
+      "asOf": "2026-10-01",
       "dr": 0,
       "organicTraffic": 1,
       "organicKeywords": 2,
-      "referringDomains": 933,
+      "referringDomains": 934,
       "keywords": [
         {
           "k": "mold remediation certificate of completion",
@@ -28,6 +28,10 @@
           "traffic": [
             {
               "date": "2026-09-01T00:00:00Z",
+              "value": 1
+            },
+            {
+              "date": "2026-10-01T00:00:00Z",
               "value": 1
             }
           ]
@@ -54,6 +58,10 @@
             {
               "date": "2026-09-30T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-10-01T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -61,11 +69,11 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-09-30",
+      "asOf": "2026-10-01",
       "dr": 0,
       "organicTraffic": 16,
       "organicKeywords": 3,
-      "referringDomains": 947,
+      "referringDomains": 948,
       "keywords": [
         {
           "k": "confined space training requirements",
@@ -878,6 +886,10 @@
             {
               "date": "2026-09-01T00:00:00Z",
               "value": 5
+            },
+            {
+              "date": "2026-10-01T00:00:00Z",
+              "value": 16
             }
           ]
         },
@@ -907,6 +919,10 @@
             {
               "date": "2026-09-30T00:00:00Z",
               "value": 16
+            },
+            {
+              "date": "2026-10-01T00:00:00Z",
+              "value": 16
             }
           ]
         }
@@ -914,10 +930,10 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-09-30",
+      "asOf": "2026-10-01",
       "dr": 0.2,
       "organicTraffic": 2,
-      "organicKeywords": 2,
+      "organicKeywords": 3,
       "referringDomains": 449,
       "keywords": [
         {
@@ -929,6 +945,12 @@
         {
           "k": "spoil pile excavation",
           "pos": 3,
+          "vol": 0,
+          "traffic": 0
+        },
+        {
+          "k": "spoil piles and or equipment must be kept at least",
+          "pos": 9,
           "vol": 0,
           "traffic": 0
         }
@@ -944,6 +966,10 @@
           "traffic": [
             {
               "date": "2026-09-01T00:00:00Z",
+              "value": 2
+            },
+            {
+              "date": "2026-10-01T00:00:00Z",
               "value": 2
             }
           ]
@@ -1053,6 +1079,10 @@
             {
               "date": "2026-09-29T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-09-30T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -1063,6 +1093,10 @@
             {
               "date": "2026-09-30T00:00:00Z",
               "value": 2
+            },
+            {
+              "date": "2026-10-01T00:00:00Z",
+              "value": 2
             }
           ]
         }
@@ -1070,11 +1104,11 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-09-30",
+      "asOf": "2026-10-01",
       "dr": 0.2,
       "organicTraffic": 0,
       "organicKeywords": 0,
-      "referringDomains": 459,
+      "referringDomains": 460,
       "keywords": [],
       "history": {
         "monthly": {
@@ -1190,6 +1224,10 @@
             },
             {
               "date": "2026-09-29T00:00:00Z",
+              "value": 0.2
+            },
+            {
+              "date": "2026-09-30T00:00:00Z",
               "value": 0.2
             }
           ],

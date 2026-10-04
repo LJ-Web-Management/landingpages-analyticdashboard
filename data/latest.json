@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-10-03T13:23:29.891Z",
+  "generatedAt": "2026-10-04T14:05:03.798Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-10-03",
+      "asOf": "2026-10-04",
       "dr": 0,
       "organicTraffic": 1,
       "organicKeywords": 2,
-      "referringDomains": 934,
+      "referringDomains": 932,
       "keywords": [
         {
           "k": "mold remediation certificate of completion",
@@ -70,6 +70,10 @@
             {
               "date": "2026-10-03T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-10-04T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -77,7 +81,7 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-10-03",
+      "asOf": "2026-10-04",
       "dr": 0,
       "organicTraffic": 16,
       "organicKeywords": 3,
@@ -943,6 +947,10 @@
             {
               "date": "2026-10-03T00:00:00Z",
               "value": 16
+            },
+            {
+              "date": "2026-10-04T00:00:00Z",
+              "value": 16
             }
           ]
         }
@@ -950,7 +958,7 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-10-03",
+      "asOf": "2026-10-04",
       "dr": 0.2,
       "organicTraffic": 2,
       "organicKeywords": 3,
@@ -1115,6 +1123,10 @@
             {
               "date": "2026-10-02T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-03T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -1137,6 +1149,10 @@
             {
               "date": "2026-10-03T00:00:00Z",
               "value": 2
+            },
+            {
+              "date": "2026-10-04T00:00:00Z",
+              "value": 2
             }
           ]
         }
@@ -1144,7 +1160,7 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-10-03",
+      "asOf": "2026-10-04",
       "dr": 0.2,
       "organicTraffic": 4,
       "organicKeywords": 1,
@@ -1293,11 +1309,19 @@
             {
               "date": "2026-10-02T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-03T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
             {
               "date": "2026-10-03T00:00:00Z",
+              "value": 4
+            },
+            {
+              "date": "2026-10-04T00:00:00Z",
               "value": 4
             }
           ]

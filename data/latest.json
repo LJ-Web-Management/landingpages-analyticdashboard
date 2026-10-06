@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-10-05T17:09:16.846Z",
+  "generatedAt": "2026-10-06T15:12:50.491Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-10-05",
+      "asOf": "2026-10-06",
       "dr": 0,
       "organicTraffic": 1,
       "organicKeywords": 2,
-      "referringDomains": 932,
+      "referringDomains": 933,
       "keywords": [
         {
           "k": "mold remediation certificate of completion",
@@ -78,6 +78,10 @@
             {
               "date": "2026-10-05T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-10-06T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -85,7 +89,7 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-10-05",
+      "asOf": "2026-10-06",
       "dr": 0,
       "organicTraffic": 18,
       "organicKeywords": 4,
@@ -965,6 +969,10 @@
             {
               "date": "2026-10-05T00:00:00Z",
               "value": 18
+            },
+            {
+              "date": "2026-10-06T00:00:00Z",
+              "value": 18
             }
           ]
         }
@@ -972,11 +980,11 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-10-05",
+      "asOf": "2026-10-06",
       "dr": 0.2,
       "organicTraffic": 4,
       "organicKeywords": 4,
-      "referringDomains": 450,
+      "referringDomains": 451,
       "keywords": [
         {
           "k": "excavation spoils",
@@ -1151,6 +1159,10 @@
             {
               "date": "2026-10-04T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-05T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -1181,6 +1193,10 @@
             {
               "date": "2026-10-05T00:00:00Z",
               "value": 4
+            },
+            {
+              "date": "2026-10-06T00:00:00Z",
+              "value": 4
             }
           ]
         }
@@ -1188,7 +1204,7 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-10-05",
+      "asOf": "2026-10-06",
       "dr": 0.2,
       "organicTraffic": 4,
       "organicKeywords": 1,
@@ -1345,6 +1361,10 @@
             {
               "date": "2026-10-04T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-05T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -1358,6 +1378,10 @@
             },
             {
               "date": "2026-10-05T00:00:00Z",
+              "value": 4
+            },
+            {
+              "date": "2026-10-06T00:00:00Z",
               "value": 4
             }
           ]

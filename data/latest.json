@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-13T15:59:23.004Z",
+  "generatedAt": "2026-10-14T13:44:13.604Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-10-13",
+      "asOf": "2026-10-14",
       "dr": 0.3,
       "organicTraffic": 1,
       "organicKeywords": 2,
@@ -168,6 +168,10 @@
             {
               "date": "2026-10-13T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-10-14T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -175,11 +179,11 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-10-13",
+      "asOf": "2026-10-14",
       "dr": 0.3,
       "organicTraffic": 18,
       "organicKeywords": 4,
-      "referringDomains": 945,
+      "referringDomains": 946,
       "keywords": [
         {
           "k": "confined space training requirements",
@@ -1140,6 +1144,10 @@
             {
               "date": "2026-10-13T00:00:00Z",
               "value": 18
+            },
+            {
+              "date": "2026-10-14T00:00:00Z",
+              "value": 18
             }
           ]
         }
@@ -1147,7 +1155,7 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-10-13",
+      "asOf": "2026-10-14",
       "dr": 0.5,
       "organicTraffic": 4,
       "organicKeywords": 5,
@@ -1378,6 +1386,10 @@
             {
               "date": "2026-10-13T00:00:00Z",
               "value": 4
+            },
+            {
+              "date": "2026-10-14T00:00:00Z",
+              "value": 4
             }
           ]
         }
@@ -1385,7 +1397,7 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-10-13",
+      "asOf": "2026-10-14",
       "dr": 0.5,
       "organicTraffic": 3,
       "organicKeywords": 1,
@@ -1571,6 +1583,10 @@
             },
             {
               "date": "2026-10-13T00:00:00Z",
+              "value": 3
+            },
+            {
+              "date": "2026-10-14T00:00:00Z",
               "value": 3
             }
           ]

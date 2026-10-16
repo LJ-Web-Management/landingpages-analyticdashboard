@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-10-15T13:26:44.024Z",
+  "generatedAt": "2026-10-16T13:15:44.157Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-10-15",
+      "asOf": "2026-10-16",
       "dr": 0.2,
       "organicTraffic": 1,
       "organicKeywords": 2,
-      "referringDomains": 932,
+      "referringDomains": 931,
       "keywords": [
         {
           "k": "mold remediation certificate of completion",
@@ -98,6 +98,10 @@
             {
               "date": "2026-10-14T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-15T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -180,6 +184,10 @@
             {
               "date": "2026-10-15T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-10-16T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -187,7 +195,7 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-10-15",
+      "asOf": "2026-10-16",
       "dr": 0.2,
       "organicTraffic": 18,
       "organicKeywords": 4,
@@ -1078,6 +1086,10 @@
             {
               "date": "2026-10-14T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-15T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -1164,6 +1176,10 @@
             {
               "date": "2026-10-15T00:00:00Z",
               "value": 18
+            },
+            {
+              "date": "2026-10-16T00:00:00Z",
+              "value": 18
             }
           ]
         }
@@ -1171,11 +1187,11 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-10-15",
-      "dr": 0.5,
+      "asOf": "2026-10-16",
+      "dr": 0.4,
       "organicTraffic": 4,
       "organicKeywords": 5,
-      "referringDomains": 448,
+      "referringDomains": 447,
       "keywords": [
         {
           "k": "excavation spoils",
@@ -1344,6 +1360,10 @@
             {
               "date": "2026-10-14T00:00:00Z",
               "value": 0.5
+            },
+            {
+              "date": "2026-10-15T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1414,6 +1434,10 @@
             {
               "date": "2026-10-15T00:00:00Z",
               "value": 4
+            },
+            {
+              "date": "2026-10-16T00:00:00Z",
+              "value": 4
             }
           ]
         }
@@ -1421,11 +1445,11 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-10-15",
-      "dr": 0.5,
+      "asOf": "2026-10-16",
+      "dr": 0.4,
       "organicTraffic": 3,
       "organicKeywords": 1,
-      "referringDomains": 458,
+      "referringDomains": 457,
       "keywords": [
         {
           "k": "qsp stormwater",
@@ -1566,6 +1590,10 @@
             {
               "date": "2026-10-14T00:00:00Z",
               "value": 0.5
+            },
+            {
+              "date": "2026-10-15T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1619,6 +1647,10 @@
             },
             {
               "date": "2026-10-15T00:00:00Z",
+              "value": 3
+            },
+            {
+              "date": "2026-10-16T00:00:00Z",
               "value": 3
             }
           ]

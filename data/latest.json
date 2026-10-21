@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-10-20T13:33:40.057Z",
+  "generatedAt": "2026-10-21T13:48:52.412Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-10-20",
+      "asOf": "2026-10-21",
       "dr": 0.3,
       "organicTraffic": 1,
       "organicKeywords": 2,
-      "referringDomains": 931,
+      "referringDomains": 930,
       "keywords": [
         {
           "k": "mold remediation certificate of completion",
@@ -118,6 +118,10 @@
             {
               "date": "2026-10-19T00:00:00Z",
               "value": 0.3
+            },
+            {
+              "date": "2026-10-20T00:00:00Z",
+              "value": 0.3
             }
           ],
           "traffic": [
@@ -220,6 +224,10 @@
             {
               "date": "2026-10-20T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-10-21T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -227,11 +235,11 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-10-20",
+      "asOf": "2026-10-21",
       "dr": 0.2,
       "organicTraffic": 15,
       "organicKeywords": 4,
-      "referringDomains": 942,
+      "referringDomains": 941,
       "keywords": [
         {
           "k": "confined space training requirements",
@@ -1130,6 +1138,10 @@
             {
               "date": "2026-10-19T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-20T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -1236,6 +1248,10 @@
             {
               "date": "2026-10-20T00:00:00Z",
               "value": 15
+            },
+            {
+              "date": "2026-10-21T00:00:00Z",
+              "value": 15
             }
           ]
         }
@@ -1243,7 +1259,7 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-10-20",
+      "asOf": "2026-10-21",
       "dr": 0.4,
       "organicTraffic": 3,
       "organicKeywords": 5,
@@ -1436,6 +1452,10 @@
             {
               "date": "2026-10-19T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-10-20T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1526,6 +1546,10 @@
             {
               "date": "2026-10-20T00:00:00Z",
               "value": 3
+            },
+            {
+              "date": "2026-10-21T00:00:00Z",
+              "value": 3
             }
           ]
         }
@@ -1533,7 +1557,7 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-10-20",
+      "asOf": "2026-10-21",
       "dr": 0.4,
       "organicTraffic": 3,
       "organicKeywords": 1,
@@ -1698,6 +1722,10 @@
             {
               "date": "2026-10-19T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-10-20T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1771,6 +1799,10 @@
             },
             {
               "date": "2026-10-20T00:00:00Z",
+              "value": 3
+            },
+            {
+              "date": "2026-10-21T00:00:00Z",
               "value": 3
             }
           ]

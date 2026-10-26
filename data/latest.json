@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-10-25T13:11:43.962Z",
+  "generatedAt": "2026-10-26T15:11:55.299Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-10-25",
+      "asOf": "2026-10-26",
       "dr": 0.2,
       "organicTraffic": 1,
       "organicKeywords": 2,
-      "referringDomains": 922,
+      "referringDomains": 921,
       "keywords": [
         {
           "k": "mold remediation certificate of completion",
@@ -138,6 +138,14 @@
             {
               "date": "2026-10-24T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-25T00:00:00Z",
+              "value": 0.2
+            },
+            {
+              "date": "2026-10-26T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -260,6 +268,10 @@
             {
               "date": "2026-10-25T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-10-26T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -267,11 +279,11 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-10-25",
+      "asOf": "2026-10-26",
       "dr": 0.2,
       "organicTraffic": 15,
       "organicKeywords": 4,
-      "referringDomains": 940,
+      "referringDomains": 939,
       "keywords": [
         {
           "k": "confined space training requirements",
@@ -283,7 +295,7 @@
           "k": "osha confined space entry training",
           "pos": 6,
           "vol": 50,
-          "traffic": 3
+          "traffic": 2
         },
         {
           "k": "confined space attendant requirements",
@@ -1190,6 +1202,14 @@
             {
               "date": "2026-10-24T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-25T00:00:00Z",
+              "value": 0.2
+            },
+            {
+              "date": "2026-10-26T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -1316,6 +1336,10 @@
             {
               "date": "2026-10-25T00:00:00Z",
               "value": 15
+            },
+            {
+              "date": "2026-10-26T00:00:00Z",
+              "value": 15
             }
           ]
         }
@@ -1323,9 +1347,9 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-10-25",
+      "asOf": "2026-10-26",
       "dr": 0.4,
-      "organicTraffic": 3,
+      "organicTraffic": 4,
       "organicKeywords": 5,
       "referringDomains": 445,
       "keywords": [
@@ -1488,6 +1512,14 @@
             {
               "date": "2026-10-24T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-10-25T00:00:00Z",
+              "value": 0.4
+            },
+            {
+              "date": "2026-10-26T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1529,75 +1561,79 @@
             },
             {
               "date": "2026-10-08T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-09T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-10T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-11T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-12T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-13T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-14T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-15T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-16T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-17T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-18T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-19T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-20T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-21T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-22T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-23T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-24T00:00:00Z",
-              "value": 3
+              "value": 4
             },
             {
               "date": "2026-10-25T00:00:00Z",
-              "value": 3
+              "value": 4
+            },
+            {
+              "date": "2026-10-26T00:00:00Z",
+              "value": 4
             }
           ]
         }
@@ -1605,7 +1641,7 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-10-25",
+      "asOf": "2026-10-26",
       "dr": 0.4,
       "organicTraffic": 3,
       "organicKeywords": 1,
@@ -1614,7 +1650,7 @@
         {
           "k": "qsp stormwater",
           "pos": 4,
-          "vol": 50,
+          "vol": 40,
           "traffic": 3
         }
       ],
@@ -1742,6 +1778,14 @@
             {
               "date": "2026-10-24T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-10-25T00:00:00Z",
+              "value": 0.4
+            },
+            {
+              "date": "2026-10-26T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1835,6 +1879,10 @@
             },
             {
               "date": "2026-10-25T00:00:00Z",
+              "value": 3
+            },
+            {
+              "date": "2026-10-26T00:00:00Z",
               "value": 3
             }
           ]

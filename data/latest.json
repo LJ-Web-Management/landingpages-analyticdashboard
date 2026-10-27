@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-10-26T15:11:55.299Z",
+  "generatedAt": "2026-10-27T14:32:03.003Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-10-26",
+      "asOf": "2026-10-27",
       "dr": 0.2,
       "organicTraffic": 1,
       "organicKeywords": 2,
-      "referringDomains": 921,
+      "referringDomains": 919,
       "keywords": [
         {
           "k": "mold remediation certificate of completion",
@@ -146,6 +146,10 @@
             {
               "date": "2026-10-26T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-27T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -272,6 +276,10 @@
             {
               "date": "2026-10-26T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-10-27T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -279,7 +287,7 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-10-26",
+      "asOf": "2026-10-27",
       "dr": 0.2,
       "organicTraffic": 15,
       "organicKeywords": 4,
@@ -1210,6 +1218,10 @@
             {
               "date": "2026-10-26T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-27T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -1340,6 +1352,10 @@
             {
               "date": "2026-10-26T00:00:00Z",
               "value": 15
+            },
+            {
+              "date": "2026-10-27T00:00:00Z",
+              "value": 15
             }
           ]
         }
@@ -1347,11 +1363,11 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-10-26",
+      "asOf": "2026-10-27",
       "dr": 0.4,
       "organicTraffic": 4,
       "organicKeywords": 5,
-      "referringDomains": 445,
+      "referringDomains": 444,
       "keywords": [
         {
           "k": "excavation spoils",
@@ -1393,7 +1409,7 @@
             },
             {
               "date": "2026-10-01T00:00:00Z",
-              "value": 0.5
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1520,6 +1536,10 @@
             {
               "date": "2026-10-26T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-10-27T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1634,6 +1654,10 @@
             {
               "date": "2026-10-26T00:00:00Z",
               "value": 4
+            },
+            {
+              "date": "2026-10-27T00:00:00Z",
+              "value": 4
             }
           ]
         }
@@ -1641,11 +1665,11 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-10-26",
+      "asOf": "2026-10-27",
       "dr": 0.4,
       "organicTraffic": 3,
       "organicKeywords": 1,
-      "referringDomains": 455,
+      "referringDomains": 454,
       "keywords": [
         {
           "k": "qsp stormwater",
@@ -1786,6 +1810,10 @@
             {
               "date": "2026-10-26T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-10-27T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1883,6 +1911,10 @@
             },
             {
               "date": "2026-10-26T00:00:00Z",
+              "value": 3
+            },
+            {
+              "date": "2026-10-27T00:00:00Z",
               "value": 3
             }
           ]

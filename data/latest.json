@@ -1,14 +1,20 @@
 {
-  "generatedAt": "2026-10-28T15:06:45.125Z",
+  "generatedAt": "2026-10-29T15:14:02.687Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-10-28",
+      "asOf": "2026-10-29",
       "dr": 0.2,
       "organicTraffic": 1,
-      "organicKeywords": 2,
-      "referringDomains": 920,
+      "organicKeywords": 3,
+      "referringDomains": 918,
       "keywords": [
+        {
+          "k": "osha mold remediation certification",
+          "pos": 1,
+          "vol": 70,
+          "traffic": 1
+        },
         {
           "k": "mold remediation certificate of completion",
           "pos": 8,
@@ -154,6 +160,10 @@
             {
               "date": "2026-10-28T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-29T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -288,6 +298,10 @@
             {
               "date": "2026-10-28T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-10-29T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -295,7 +309,7 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-10-28",
+      "asOf": "2026-10-29",
       "dr": 0.2,
       "organicTraffic": 15,
       "organicKeywords": 4,
@@ -1234,6 +1248,10 @@
             {
               "date": "2026-10-28T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-29T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -1372,6 +1390,10 @@
             {
               "date": "2026-10-28T00:00:00Z",
               "value": 15
+            },
+            {
+              "date": "2026-10-29T00:00:00Z",
+              "value": 15
             }
           ]
         }
@@ -1379,7 +1401,7 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-10-28",
+      "asOf": "2026-10-29",
       "dr": 0.4,
       "organicTraffic": 4,
       "organicKeywords": 5,
@@ -1682,6 +1704,10 @@
             {
               "date": "2026-10-28T00:00:00Z",
               "value": 4
+            },
+            {
+              "date": "2026-10-29T00:00:00Z",
+              "value": 4
             }
           ]
         }
@@ -1689,7 +1715,7 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-10-28",
+      "asOf": "2026-10-29",
       "dr": 0.4,
       "organicTraffic": 3,
       "organicKeywords": 1,
@@ -1842,6 +1868,10 @@
             {
               "date": "2026-10-28T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-10-29T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1947,6 +1977,10 @@
             },
             {
               "date": "2026-10-28T00:00:00Z",
+              "value": 3
+            },
+            {
+              "date": "2026-10-29T00:00:00Z",
               "value": 3
             }
           ]

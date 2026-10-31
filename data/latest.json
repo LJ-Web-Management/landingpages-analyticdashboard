@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-30T15:03:13.924Z",
+  "generatedAt": "2026-10-31T14:32:07.644Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-10-30",
+      "asOf": "2026-10-31",
       "dr": 0.2,
       "organicTraffic": 1,
       "organicKeywords": 3,
@@ -168,6 +168,10 @@
             {
               "date": "2026-10-30T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-31T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -310,6 +314,10 @@
             {
               "date": "2026-10-30T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-10-31T00:00:00Z",
+              "value": 1
             }
           ]
         }
@@ -317,11 +325,11 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-10-30",
+      "asOf": "2026-10-31",
       "dr": 0.2,
       "organicTraffic": 15,
       "organicKeywords": 4,
-      "referringDomains": 937,
+      "referringDomains": 936,
       "keywords": [
         {
           "k": "confined space training requirements",
@@ -353,7 +361,7 @@
           "dr": [
             {
               "date": "2018-08-01T00:00:00Z",
-              "value": 1
+              "value": 0.9
             },
             {
               "date": "2018-09-01T00:00:00Z",
@@ -1264,13 +1272,13 @@
             {
               "date": "2026-10-30T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-10-31T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
-            {
-              "date": "2026-09-25T00:00:00Z",
-              "value": 1
-            },
             {
               "date": "2026-09-26T00:00:00Z",
               "value": 1
@@ -1410,6 +1418,10 @@
             {
               "date": "2026-10-30T00:00:00Z",
               "value": 15
+            },
+            {
+              "date": "2026-10-31T00:00:00Z",
+              "value": 15
             }
           ]
         }
@@ -1417,10 +1429,10 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-10-30",
+      "asOf": "2026-10-31",
       "dr": 0.4,
       "organicTraffic": 4,
-      "organicKeywords": 5,
+      "organicKeywords": 6,
       "referringDomains": 444,
       "keywords": [
         {
@@ -1434,6 +1446,12 @@
           "pos": 8,
           "vol": 20,
           "traffic": 1
+        },
+        {
+          "k": "trench definition osha",
+          "pos": 9,
+          "vol": 10,
+          "traffic": 0
         },
         {
           "k": "benching excavation",
@@ -1606,6 +1624,10 @@
             {
               "date": "2026-10-30T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-10-31T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1736,6 +1758,10 @@
             {
               "date": "2026-10-30T00:00:00Z",
               "value": 4
+            },
+            {
+              "date": "2026-10-31T00:00:00Z",
+              "value": 4
             }
           ]
         }
@@ -1743,17 +1769,23 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-10-30",
+      "asOf": "2026-10-31",
       "dr": 0.4,
       "organicTraffic": 3,
-      "organicKeywords": 1,
-      "referringDomains": 454,
+      "organicKeywords": 2,
+      "referringDomains": 453,
       "keywords": [
         {
           "k": "qsp stormwater",
           "pos": 4,
           "vol": 40,
           "traffic": 3
+        },
+        {
+          "k": "epa concrete washout regulations",
+          "pos": 9,
+          "vol": 10,
+          "traffic": 0
         }
       ],
       "history": {
@@ -1904,6 +1936,10 @@
             {
               "date": "2026-10-30T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-10-31T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -2017,6 +2053,10 @@
             },
             {
               "date": "2026-10-30T00:00:00Z",
+              "value": 3
+            },
+            {
+              "date": "2026-10-31T00:00:00Z",
               "value": 3
             }
           ]

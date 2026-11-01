@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-10-31T14:32:07.644Z",
+  "generatedAt": "2026-11-01T15:09:50.637Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-10-31",
+      "asOf": "2026-11-01",
       "dr": 0.2,
-      "organicTraffic": 1,
-      "organicKeywords": 3,
+      "organicTraffic": 2,
+      "organicKeywords": 4,
       "referringDomains": 916,
       "keywords": [
         {
@@ -22,6 +22,12 @@
           "traffic": 0
         },
         {
+          "k": "a que huele el moho",
+          "pos": 1,
+          "vol": 20,
+          "traffic": 0
+        },
+        {
           "k": "osha mold fact sheet",
           "pos": 8,
           "vol": 10,
@@ -34,6 +40,10 @@
             {
               "date": "2026-10-01T00:00:00Z",
               "value": 0.3
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -44,6 +54,10 @@
             {
               "date": "2026-10-01T00:00:00Z",
               "value": 1
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 2
             }
           ]
         },
@@ -172,13 +186,13 @@
             {
               "date": "2026-10-31T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
-            {
-              "date": "2026-09-26T00:00:00Z",
-              "value": 0
-            },
             {
               "date": "2026-09-27T00:00:00Z",
               "value": 0
@@ -317,7 +331,11 @@
             },
             {
               "date": "2026-10-31T00:00:00Z",
-              "value": 1
+              "value": 2
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 2
             }
           ]
         }
@@ -325,11 +343,11 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-10-31",
+      "asOf": "2026-11-01",
       "dr": 0.2,
       "organicTraffic": 15,
       "organicKeywords": 4,
-      "referringDomains": 936,
+      "referringDomains": 935,
       "keywords": [
         {
           "k": "confined space training requirements",
@@ -754,6 +772,10 @@
             {
               "date": "2026-10-01T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
@@ -1148,6 +1170,10 @@
             {
               "date": "2026-10-01T00:00:00Z",
               "value": 14
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 15
             }
           ]
         },
@@ -1276,13 +1302,13 @@
             {
               "date": "2026-10-31T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
-            {
-              "date": "2026-09-26T00:00:00Z",
-              "value": 1
-            },
             {
               "date": "2026-09-27T00:00:00Z",
               "value": 1
@@ -1422,6 +1448,10 @@
             {
               "date": "2026-10-31T00:00:00Z",
               "value": 15
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 15
             }
           ]
         }
@@ -1429,12 +1459,18 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-10-31",
+      "asOf": "2026-11-01",
       "dr": 0.4,
-      "organicTraffic": 4,
-      "organicKeywords": 6,
-      "referringDomains": 444,
+      "organicTraffic": 7,
+      "organicKeywords": 8,
+      "referringDomains": 443,
       "keywords": [
+        {
+          "k": "slide rail shoring",
+          "pos": 8,
+          "vol": 100,
+          "traffic": 3
+        },
         {
           "k": "excavation spoils",
           "pos": 6,
@@ -1460,14 +1496,8 @@
           "traffic": 0
         },
         {
-          "k": "spoil piles and or equipment must be kept at least",
-          "pos": 9,
-          "vol": 0,
-          "traffic": 0
-        },
-        {
-          "k": "spoil pile excavation",
-          "pos": 3,
+          "k": "excavation terminology",
+          "pos": 8,
           "vol": 0,
           "traffic": 0
         }
@@ -1482,6 +1512,10 @@
             {
               "date": "2026-10-01T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1492,6 +1526,10 @@
             {
               "date": "2026-10-01T00:00:00Z",
               "value": 3
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 7
             }
           ]
         },
@@ -1628,6 +1666,10 @@
             {
               "date": "2026-10-31T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1762,6 +1804,10 @@
             {
               "date": "2026-10-31T00:00:00Z",
               "value": 4
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 7
             }
           ]
         }
@@ -1769,7 +1815,7 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-10-31",
+      "asOf": "2026-11-01",
       "dr": 0.4,
       "organicTraffic": 3,
       "organicKeywords": 2,
@@ -1798,11 +1844,19 @@
             {
               "date": "2026-10-01T00:00:00Z",
               "value": 0.5
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
             {
               "date": "2026-10-01T00:00:00Z",
+              "value": 3
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
               "value": 3
             }
           ]
@@ -1940,6 +1994,10 @@
             {
               "date": "2026-10-31T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -2057,6 +2115,10 @@
             },
             {
               "date": "2026-10-31T00:00:00Z",
+              "value": 3
+            },
+            {
+              "date": "2026-11-01T00:00:00Z",
               "value": 3
             }
           ]

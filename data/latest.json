@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-11-01T15:09:50.637Z",
+  "generatedAt": "2026-11-02T18:22:36.208Z",
   "sites": {
     "mold": {
       "id": "mold",
-      "asOf": "2026-11-01",
+      "asOf": "2026-11-02",
       "dr": 0.2,
       "organicTraffic": 2,
       "organicKeywords": 4,
@@ -190,13 +190,13 @@
             {
               "date": "2026-11-01T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-11-02T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
-            {
-              "date": "2026-09-27T00:00:00Z",
-              "value": 0
-            },
             {
               "date": "2026-09-28T00:00:00Z",
               "value": 0
@@ -336,6 +336,10 @@
             {
               "date": "2026-11-01T00:00:00Z",
               "value": 2
+            },
+            {
+              "date": "2026-11-02T00:00:00Z",
+              "value": 2
             }
           ]
         }
@@ -343,11 +347,11 @@
     },
     "confined": {
       "id": "confined",
-      "asOf": "2026-11-01",
+      "asOf": "2026-11-02",
       "dr": 0.2,
-      "organicTraffic": 15,
+      "organicTraffic": 14,
       "organicKeywords": 4,
-      "referringDomains": 935,
+      "referringDomains": 934,
       "keywords": [
         {
           "k": "confined space training requirements",
@@ -368,10 +372,10 @@
           "traffic": 2
         },
         {
-          "k": "confined space roles",
-          "pos": 8,
-          "vol": 20,
-          "traffic": 1
+          "k": "before work begins the competent person",
+          "pos": 6,
+          "vol": 0,
+          "traffic": 0
         }
       ],
       "history": {
@@ -1173,7 +1177,7 @@
             },
             {
               "date": "2026-11-01T00:00:00Z",
-              "value": 15
+              "value": 14
             }
           ]
         },
@@ -1306,13 +1310,13 @@
             {
               "date": "2026-11-01T00:00:00Z",
               "value": 0.2
+            },
+            {
+              "date": "2026-11-02T00:00:00Z",
+              "value": 0.2
             }
           ],
           "traffic": [
-            {
-              "date": "2026-09-27T00:00:00Z",
-              "value": 1
-            },
             {
               "date": "2026-09-28T00:00:00Z",
               "value": 2
@@ -1452,6 +1456,10 @@
             {
               "date": "2026-11-01T00:00:00Z",
               "value": 15
+            },
+            {
+              "date": "2026-11-02T00:00:00Z",
+              "value": 14
             }
           ]
         }
@@ -1459,7 +1467,7 @@
     },
     "excavation": {
       "id": "excavation",
-      "asOf": "2026-11-01",
+      "asOf": "2026-11-02",
       "dr": 0.4,
       "organicTraffic": 7,
       "organicKeywords": 8,
@@ -1670,6 +1678,10 @@
             {
               "date": "2026-11-01T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-11-02T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -1808,6 +1820,10 @@
             {
               "date": "2026-11-01T00:00:00Z",
               "value": 7
+            },
+            {
+              "date": "2026-11-02T00:00:00Z",
+              "value": 7
             }
           ]
         }
@@ -1815,7 +1831,7 @@
     },
     "stormwater": {
       "id": "stormwater",
-      "asOf": "2026-11-01",
+      "asOf": "2026-11-02",
       "dr": 0.4,
       "organicTraffic": 3,
       "organicKeywords": 2,
@@ -1998,6 +2014,10 @@
             {
               "date": "2026-11-01T00:00:00Z",
               "value": 0.4
+            },
+            {
+              "date": "2026-11-02T00:00:00Z",
+              "value": 0.4
             }
           ],
           "traffic": [
@@ -2119,6 +2139,10 @@
             },
             {
               "date": "2026-11-01T00:00:00Z",
+              "value": 3
+            },
+            {
+              "date": "2026-11-02T00:00:00Z",
               "value": 3
             }
           ]

@@ -11,6 +11,7 @@
 <script src="assets/glass-theme.js"></script>
 <style>
   *{ box-sizing: border-box; }
+  [hidden]{ display: none !important; }
   html,body{ margin:0; padding:0; }
   body{ font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.45; }
   button{ font-family: inherit; }
@@ -20,7 +21,7 @@
   @media (min-width: 700px){ .wrap{ padding: 28px 24px 96px; } }
 
   /* top bar */
-  .topbar{ display:flex; align-items:center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 12px 14px 12px 18px; border-radius: 999px; margin-bottom: 18px; }
+  .topbar{ z-index: 30; display:flex; align-items:center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 12px 14px 12px 18px; border-radius: 999px; margin-bottom: 18px; }
   .brand{ display:flex; align-items:center; gap: 12px; min-width: 0; }
   .brand-mark{ width: 34px; height: 34px; border-radius: 11px; flex:none; display:grid; place-items:center;
     background: linear-gradient(135deg, rgba(255,255,255,.55), rgba(255,255,255,.12)); box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
@@ -40,8 +41,9 @@
   .ms-trigger{ min-width: 230px; justify-content: space-between; }
   .ms-trigger .count{ font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.18); }
   .ms-pop{ position:absolute; left:0; top: calc(100% + 8px); width: min(380px, calc(100vw - 32px)); padding: 10px; display:none; z-index: 40;
-    --g-tint: rgba(10,12,24,0.45); }
-  html[data-tone="light"] .ms-pop{ --g-tint: rgba(255,255,255,0.55); }
+    --g-tint: rgba(14,16,30,0.80); }
+  /* popovers sit inside another glass panel, where backdrop blur can't reach the page, so they need a denser fill */
+  html[data-tone="light"] .ms-pop{ --g-tint: rgba(255,255,255,0.86); }
   .ms-pop.open{ display:block; }
   .ms-search{ width:100%; font: inherit; font-size: 14px; color: var(--g-text); background: rgba(255,255,255,.1); border: 1px solid var(--g-edge-soft); border-radius: 12px; padding: 9px 12px; }
   .ms-search::placeholder{ color: var(--g-text-3); }
@@ -54,6 +56,17 @@
   .ms-item input{ width: 17px; height: 17px; accent-color: var(--accent); flex:none; margin:0; }
   .ms-item .ms-name{ flex:1; min-width:0; overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ms-item .ms-kind{ font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--g-text-3); }
+  .acct-pop{ left: auto; right: 0; }
+  .acct-head{ font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--g-text-3); padding: 2px 8px 6px; }
+  .acct-item{ display:flex; align-items:center; gap: 8px; padding: 8px; border-radius: 10px; }
+  .acct-item:hover{ background: rgba(255,255,255,.08); }
+  .acct-main{ flex:1; min-width:0; display:flex; flex-direction: column; }
+  .acct-email{ font-size: 13.5px; font-weight: 600; overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .acct-meta{ font-size: 12px; color: var(--g-text-3); }
+  .acct-act{ font: inherit; font-size: 12px; font-weight: 600; color: var(--g-text); background: rgba(255,255,255,.14); border: 1px solid var(--g-edge-soft); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+  .acct-x{ width: 24px; height: 24px; border-radius: 50%; border: none; background: rgba(255,255,255,.12); color: var(--g-text); cursor: pointer; font-size: 15px; line-height: 1; padding: 0; flex: none; }
+  .acct-x:hover{ background: rgba(255,255,255,.26); }
+  .acct-note{ margin: 4px 8px 2px; font-size: 11.5px; color: var(--g-text-3); }
   .ms-empty{ padding: 14px 8px; font-size: 13px; color: var(--g-text-3); }
 
   .seg{ display:inline-flex; gap: 3px; padding: 4px; border-radius: 999px; flex-wrap: wrap; }
@@ -173,12 +186,20 @@
     </div>
     <div class="topbar-actions">
       <span class="source-pill" id="sourcePill"><span class="dot"></span><span id="sourceText">Demo data</span></span>
-      <button class="glass-btn primary" id="connectBtn" type="button">Connect Google</button>
+      <div class="ms acct-menu" id="acctMenu">
+        <button class="glass-btn primary" id="connectBtn" type="button" aria-haspopup="true" aria-expanded="false">Connect Google</button>
+        <div class="ms-pop glass-panel acct-pop" id="acctPop">
+          <div class="acct-head">Google accounts</div>
+          <ul class="ms-list" id="acctList"></ul>
+          <div class="ms-bulk"><button type="button" id="acctAdd">+ Add another account</button><button type="button" id="acctShared" hidden>Back to shared view</button></div>
+          <p class="acct-note" id="acctNote"></p>
+        </div>
+      </div>
     </div>
   </header>
 
   <div class="banner glass-panel" id="demoBanner">
-    <span><b>You're viewing demo data.</b> Connect your Google account to load every property in your Search Console — nothing is stored on a server; data stays in your browser.</span>
+    <span><b>You're viewing demo data.</b> Connect one or more Google accounts to see your Search Console here. To show real data to everyone who opens this page, set up the daily sync (see the README).</span>
     <button class="glass-btn" type="button" id="bannerConnect">Connect</button>
   </div>
 

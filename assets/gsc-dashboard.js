@@ -1,7 +1,9 @@
 /* Google Search Console multi-site dashboard.
    - Demo mode: deterministic sample data so the page works before setup.
-   - Live mode: Google Identity Services token (webmasters.readonly) → Search Console API,
-     called directly from the browser. Nothing is persisted server-side.
+   - Shared mode: data/gsc/*.json written daily by the GitHub Action, so every
+     visitor sees real data without signing in.
+   - Live mode: one or more Google accounts signed in via Google Identity Services
+     (webmasters.readonly) → Search Console API, called directly from the browser.
    Combining rules: clicks & impressions sum; CTR = Σclicks / Σimpressions;
    position = impression-weighted mean of each site's average position. */
 (function(){
@@ -9,7 +11,7 @@
 
   var API = "https://www.googleapis.com/webmasters/v3";
   var SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";
-  var LS_SEL = "gsc.selected.v1", LS_CID = "gsc.clientId", SS_TOKEN = "gsc.token";
+  var LS_SEL = "gsc.selected.v1", LS_CID = "gsc.clientId";
   var MAX_SLOTS = 8;  // categorical colour slots; more sites fold to "Other" in per-site charts
 
   var RANGES = [
@@ -24,14 +26,14 @@
   ];
 
   var state = {
-    mode: "demo",           // demo | live
+    mode: "demo",           // demo | shared | live
+    endDate: null,          // shared mode: last day in the synced data
     sites: [],              // [{ siteUrl, permissionLevel }]
     selected: [],           // siteUrls, in selection order
     slots: {},              // siteUrl -> colour slot 1..8 (stable while selected)
     range: 28,
     metric: "clicks",
     chartMode: "combined",  // combined | split
-    token: null,
     qLimit: 15, pLimit: 15,
     loading: false
   };
@@ -54,17 +56,16 @@
   function colorFor(siteUrl){ var s = state.slots[siteUrl]; return s ? cssVar("--s" + s) : cssVar("--s-other"); }
   function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
   function lsSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
-  function ssGet(k){ try { return sessionStorage.getItem(k); } catch(e){ return null; } }
-  function ssSet(k, v){ try { if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch(e){} }
   var toastTimer;
   function toast(msg, ms){
     var t = $("toast"); t.textContent = msg; t.classList.add("show");
     clearTimeout(toastTimer); toastTimer = setTimeout(function(){ t.classList.remove("show"); }, ms || 4200);
   }
 
-  /* Windows: GSC data lags ~2 days, so the window ends 2 days ago. */
+  /* Windows: GSC data lags ~2 days, so the window ends 2 days ago
+     (or on the last synced day in shared mode). */
   function windows(range){
-    var end = addDays(utcToday(), -2);
+    var end = state.endDate ? new Date(state.endDate + "T00:00:00Z") : addDays(utcToday(), -2);
     var start = addDays(end, -(range - 1));
     var pEnd = addDays(start, -1), pStart = addDays(pEnd, -(range - 1));
     return { start: iso(start), end: iso(end), pStart: iso(pStart), pEnd: iso(pEnd) };
@@ -134,8 +135,48 @@
     };
   }
 
-  /* ================= live API ================= */
+  /* ================= shared (daily-synced) data ================= */
+  // data/gsc/*.json is written by .github/workflows/fetch-gsc-data.yml so that
+  // anyone who opens the dashboard sees real data without signing in.
+  var sharedIndex = null, sharedFiles = {};
+  function loadSharedIndex(){
+    return fetch("data/gsc/index.json", { cache: "no-store" })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){ return j && j.sites && j.sites.length ? j : null; })
+      .catch(function(){ return null; });
+  }
+  function sharedFile(siteUrl){
+    var entry = sharedIndex.sites.filter(function(s){ return s.siteUrl === siteUrl; })[0];
+    if (!entry) return Promise.reject(new Error("No synced data for " + shortSite(siteUrl)));
+    if (!sharedFiles[siteUrl]) sharedFiles[siteUrl] = fetch("data/gsc/" + encodeURIComponent(entry.file), { cache: "no-store" })
+      .then(function(r){ if (!r.ok) throw new Error("Couldn't load synced data for " + shortSite(siteUrl)); return r.json(); })
+      .catch(function(e){ delete sharedFiles[siteUrl]; throw e; });
+    return sharedFiles[siteUrl];
+  }
+  function sharedDataset(siteUrl, range){
+    return sharedFile(siteUrl).then(function(f){
+      var w = windows(range), byDate = {};
+      (f.daily || []).forEach(function(r){ byDate[r[0]] = r; });
+      var rg = (f.ranges && f.ranges[range]) || {};
+      function items(a){ return (a || []).map(function(r){ return { key: r[0], clicks: r[1], impressions: r[2], position: r[3] }; }); }
+      return {
+        siteUrl: siteUrl, window: w,
+        series: dateList(w.pStart, w.end).map(function(d){ var r = byDate[d]; return { date: d, clicks: r ? r[1] : 0, impressions: r ? r[2] : 0, position: r ? r[3] : 0 }; }),
+        queries: items(rg.q), pages: items(rg.p), countries: items(rg.c), devices: items(rg.d)
+      };
+    });
+  }
+
+  /* ================= live API (one or more Google accounts) ================= */
+  var LS_ACCTS = "gsc.accounts.v1";
+  state.accounts = [];   // [{ email, access_token, exp, sites: [{siteUrl, permissionLevel}] }]
   function getClientId(){ return (window.GSC_CONFIG && window.GSC_CONFIG.clientId) || lsGet(LS_CID) || ""; }
+  function saveAccounts(){ lsSet(LS_ACCTS, JSON.stringify(state.accounts.map(function(a){ return { email: a.email, access_token: a.access_token, exp: a.exp }; }))); }
+  function restoreAccounts(){
+    var saved; try { saved = JSON.parse(lsGet(LS_ACCTS) || "[]"); } catch(e){ saved = []; }
+    state.accounts = (Array.isArray(saved) ? saved : []).filter(function(a){ return a && a.email; }).map(function(a){ return { email: a.email, access_token: a.access_token, exp: a.exp || 0, sites: [] }; });
+  }
+  function isActive(a){ return a.access_token && a.exp > Date.now(); }
   var gisPromise;
   function loadGis(){
     if (gisPromise) return gisPromise;
@@ -147,44 +188,51 @@
     });
     return gisPromise;
   }
-  function requestToken(prompt){
+  // hint = an email to re-authorise; no hint = let the user pick (or add) an account
+  function requestToken(hint){
     return loadGis().then(function(){
       return new Promise(function(resolve, reject){
         var client = google.accounts.oauth2.initTokenClient({
-          client_id: getClientId(), scope: SCOPE,
+          client_id: getClientId(), scope: SCOPE + " email", hint: hint || undefined, login_hint: hint || undefined,
           callback: function(resp){
             if (resp.error) return reject(new Error(resp.error_description || resp.error));
-            var tok = { access_token: resp.access_token, exp: Date.now() + (Number(resp.expires_in) || 3600) * 1000 - 60000 };
-            ssSet(SS_TOKEN, JSON.stringify(tok)); resolve(tok);
+            if (google.accounts.oauth2.hasGrantedAllScopes && !google.accounts.oauth2.hasGrantedAllScopes(resp, SCOPE))
+              return reject(new Error("Search Console access wasn't granted. Tick the Search Console box when signing in."));
+            resolve({ access_token: resp.access_token, exp: Date.now() + (Number(resp.expires_in) || 3600) * 1000 - 60000 });
           },
           error_callback: function(err){ reject(new Error(err && err.message || "Sign-in was cancelled.")); }
         });
-        client.requestAccessToken({ prompt: prompt || "" });
+        client.requestAccessToken({ prompt: hint ? "" : "select_account" });
       });
     });
   }
-  function validToken(){
-    if (state.token && state.token.exp > Date.now()) return Promise.resolve(state.token);
-    return requestToken("").then(function(t){ state.token = t; return t; });
-  }
-  function api(path, body){
-    return validToken().then(function(tok){
-      return fetch(API + path, {
-        method: body ? "POST" : "GET",
-        headers: Object.assign({ Authorization: "Bearer " + tok.access_token }, body ? { "Content-Type": "application/json" } : {}),
-        body: body ? JSON.stringify(body) : undefined
-      });
+  function authed(acct, url, body){
+    if (!isActive(acct)) return Promise.reject(new Error("The session for " + acct.email + " expired. Reconnect it from the Accounts menu."));
+    return fetch(url, {
+      method: body ? "POST" : "GET",
+      headers: Object.assign({ Authorization: "Bearer " + acct.access_token }, body ? { "Content-Type": "application/json" } : {}),
+      body: body ? JSON.stringify(body) : undefined
     }).then(function(res){
-      if (res.status === 401){ state.token = null; ssSet(SS_TOKEN, null); }
-      if (!res.ok) return res.json().catch(function(){ return {}; }).then(function(j){ throw new Error((j.error && j.error.message) || ("Search Console API error " + res.status)); });
+      if (res.status === 401){ acct.exp = 0; saveAccounts(); }
+      if (!res.ok) return res.json().catch(function(){ return {}; }).then(function(j){ throw new Error((j.error && j.error.message) || ("Google API error " + res.status)); });
       return res.json();
     });
+  }
+  function loadAccountSites(acct){
+    return authed(acct, API + "/sites").then(function(j){ acct.sites = j.siteEntry || []; return acct; });
+  }
+  function ownerOf(siteUrl){
+    return state.accounts.filter(function(a){ return isActive(a) && a.sites.some(function(s){ return s.siteUrl === siteUrl && s.permissionLevel !== "siteUnverifiedUser"; }); })[0];
   }
   // keep concurrent API calls modest (quota is per-user, per-site QPS)
   var active = 0, queue = [];
   function limited(fn){ return new Promise(function(res, rej){ queue.push({ fn: fn, res: res, rej: rej }); pump(); }); }
   function pump(){ while (active < 4 && queue.length){ var j = queue.shift(); active++; j.fn().then(j.res, j.rej).then(function(){ active--; pump(); }); } }
-  function sa(siteUrl, body){ return limited(function(){ return api("/sites/" + encodeURIComponent(siteUrl) + "/searchAnalytics/query", Object.assign({ dataState: "all" }, body)); }); }
+  function sa(siteUrl, body){
+    var acct = ownerOf(siteUrl);
+    if (!acct) return Promise.reject(new Error("No connected account can read " + shortSite(siteUrl) + "."));
+    return limited(function(){ return authed(acct, API + "/sites/" + encodeURIComponent(siteUrl) + "/searchAnalytics/query", Object.assign({ dataState: "all" }, body)); });
+  }
   function rowsToItems(rows){ return (rows || []).map(function(r){ return { key: r.keys[0], clicks: r.clicks, impressions: r.impressions, position: r.position }; }); }
   function liveDataset(siteUrl, range){
     var w = windows(range);
@@ -205,8 +253,11 @@
   }
   function dataset(siteUrl){
     var k = state.mode + "|" + siteUrl + "|" + state.range;
-    if (!cache[k]) cache[k] = (state.mode === "demo" ? Promise.resolve(demoDataset(siteUrl, state.range)) : liveDataset(siteUrl, state.range))
-      .catch(function(e){ delete cache[k]; throw e; });
+    if (!cache[k]){
+      var load = state.mode === "demo" ? Promise.resolve(demoDataset(siteUrl, state.range))
+        : state.mode === "shared" ? sharedDataset(siteUrl, state.range) : liveDataset(siteUrl, state.range);
+      cache[k] = load.catch(function(e){ delete cache[k]; throw e; });
+    }
     return cache[k];
   }
 
@@ -239,14 +290,18 @@
     });
     function cur(pts){ return pts.filter(function(p){ return p.date >= w.start; }); }
     function prev(pts){ return pts.filter(function(p){ return p.date < w.start; }); }
+    // Search Console keeps ~16 months; if the previous window reaches past that,
+    // a comparison would be against partial data, so report "no prior data".
+    var prevOk = w.pStart >= iso(addDays(new Date(w.end + "T00:00:00Z"), -485));
+    var none = { clicks: 0, impressions: 0, ctr: 0, position: 0 };
     var perSite = sets.map(function(s){
-      return { siteUrl: s.siteUrl, cur: totalsOf(cur(s.series)), prev: totalsOf(prev(s.series)),
+      return { siteUrl: s.siteUrl, cur: totalsOf(cur(s.series)), prev: prevOk ? totalsOf(prev(s.series)) : none,
         series: cur(s.series).map(function(p){ return { date: p.date, clicks: p.clicks, impressions: p.impressions, ctr: p.impressions ? p.clicks / p.impressions : 0, position: p.impressions ? p.position : null }; }) };
     });
     return {
       window: w, dates: cur(combined).map(function(p){ return p.date; }),
       series: cur(combined), prevSeries: prev(combined),
-      cur: totalsOf(cur(combined)), prev: totalsOf(prev(combined)), perSite: perSite,
+      cur: totalsOf(cur(combined)), prev: prevOk ? totalsOf(prev(combined)) : none, perSite: perSite,
       queries: mergeItems(sets.map(function(s){ return { siteUrl: s.siteUrl, items: s.queries }; })),
       pages: mergeItems(sets.map(function(s){ return { siteUrl: s.siteUrl, items: s.pages }; })),
       countries: mergeItems(sets.map(function(s){ return { siteUrl: s.siteUrl, items: s.countries }; })),
@@ -290,7 +345,7 @@
     var pop = $("msPop"), trig = $("msTrigger");
     function open(v){ pop.classList.toggle("open", v); trig.setAttribute("aria-expanded", String(v)); if (v){ renderSiteList(); setTimeout(function(){ $("msSearch").focus(); }, 0); } }
     trig.addEventListener("click", function(e){ e.stopPropagation(); open(!pop.classList.contains("open")); });
-    document.addEventListener("click", function(e){ if (!$("siteMs").contains(e.target)) open(false); });
+    document.addEventListener("click", function(e){ if (e.target.isConnected && !$("siteMs").contains(e.target)) open(false); });
     document.addEventListener("keydown", function(e){ if (e.key === "Escape" && pop.classList.contains("open")){ open(false); trig.focus(); } });
     $("msSearch").addEventListener("input", renderSiteList);
     $("msList").addEventListener("change", function(e){
@@ -369,7 +424,7 @@
     el.innerHTML = METRICS.map(function(m){
       var cur = current.cur[m.key], prev = current.prev[m.key];
       var sub = m.key === "ctr" ? fmtFull(current.cur.clicks) + " clicks / " + fmtFull(current.cur.impressions) + " impr."
-        : m.key === "position" ? "Weighted by impressions" : "Prev: " + fmtFull(prev);
+        : m.key === "position" ? "Weighted by impressions" : "Prev: " + (prev ? fmtFull(prev) : "—");
       return '<div class="kpi glass-panel"><span class="kpi-label">' + m.label + '</span>' +
         '<div class="kpi-row"><span class="kpi-value" title="' + (m.key === "clicks" || m.key === "impressions" ? fmtFull(cur) : "") + '">' + m.fmt(cur) + '</span>' +
         deltaHtml(cur, prev, m.invert, m.key === "ctr") + '</div>' +
@@ -542,7 +597,7 @@
     bars($("deviceBars"), current ? current.devices : [], function(k){ return k.charAt(0) + k.slice(1).toLowerCase(); }, 3);
   }
 
-  /* ================= modes ================= */
+  /* ================= modes: live (signed-in accounts) → shared (daily sync) → demo ================= */
   function loadSelection(){
     var saved; try { saved = JSON.parse(lsGet(LS_SEL + "." + state.mode) || "null"); } catch(e){}
     var usable = usableSites().map(function(s){ return s.siteUrl; });
@@ -550,32 +605,85 @@
     if (Array.isArray(saved) && saved.length && !state.selected.length) state.selected = usable.slice(0, MAX_SLOTS);
     state.slots = {}; assignSlots(); updateTrigger(); renderSiteList(); renderChips();
   }
+  function setSource(live, text, button){
+    $("sourcePill").classList.toggle("live", live); $("sourceText").textContent = text;
+    $("connectBtn").textContent = button;
+    $("demoBanner").hidden = state.mode !== "demo";
+    renderControls(); renderAccounts();
+  }
+  function enterBase(){ return sharedIndex ? enterShared() : enterDemo(); }
   function enterDemo(){
-    state.mode = "demo"; state.sites = DEMO_SITES.map(function(s){ return { siteUrl: s.siteUrl, permissionLevel: "siteOwner" }; });
-    $("sourcePill").classList.remove("live"); $("sourceText").textContent = "Demo data";
-    $("connectBtn").textContent = "Connect Google"; $("demoBanner").hidden = false;
+    state.mode = "demo"; state.endDate = null;
+    state.sites = DEMO_SITES.map(function(s){ return { siteUrl: s.siteUrl, permissionLevel: "siteOwner" }; });
+    setSource(false, "Demo data", "Connect Google");
+    loadSelection(); refresh();
+  }
+  function enterShared(){
+    state.mode = "shared"; state.endDate = sharedIndex.endDate || null;
+    state.sites = sharedIndex.sites.map(function(s){ return { siteUrl: s.siteUrl, permissionLevel: s.permissionLevel || "siteOwner" }; })
+      .sort(function(a, b){ return shortSite(a.siteUrl).localeCompare(shortSite(b.siteUrl)); });
+    var when = sharedIndex.generatedAt ? new Date(sharedIndex.generatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+    setSource(true, "Synced daily" + (when ? " · updated " + when : ""), state.accounts.length ? "Accounts (" + state.accounts.length + ")" : "Sign in for live data");
     loadSelection(); refresh();
   }
   function enterLive(){
+    var activeAccts = state.accounts.filter(isActive);
+    if (!activeAccts.length) return Promise.resolve(enterBase());
     setLoading(true);
-    return api("/sites").then(function(j){
-      state.mode = "live";
-      state.sites = (j.siteEntry || []).sort(function(a, b){ return shortSite(a.siteUrl).localeCompare(shortSite(b.siteUrl)); });
-      $("sourcePill").classList.add("live"); $("sourceText").textContent = "Live · " + usableSites().length + " properties";
-      $("connectBtn").textContent = "Disconnect"; $("demoBanner").hidden = true;
-      if (!state.sites.length) toast("This Google account has no Search Console properties.", 6000);
+    return Promise.all(activeAccts.map(function(a){ return loadAccountSites(a).catch(function(err){ toast(a.email + ": " + err.message, 6000); return a; }); })).then(function(){
+      state.mode = "live"; state.endDate = null;
+      var seen = {}; state.sites = [];
+      state.accounts.filter(isActive).forEach(function(a){ a.sites.forEach(function(s){
+        if (!seen[s.siteUrl] || (seen[s.siteUrl].permissionLevel === "siteUnverifiedUser" && s.permissionLevel !== "siteUnverifiedUser")){
+          if (seen[s.siteUrl]) state.sites.splice(state.sites.indexOf(seen[s.siteUrl]), 1);
+          seen[s.siteUrl] = s; state.sites.push(s);
+        }
+      }); });
+      state.sites.sort(function(a, b){ return shortSite(a.siteUrl).localeCompare(shortSite(b.siteUrl)); });
+      Object.keys(cache).forEach(function(k){ if (k.indexOf("live|") === 0) delete cache[k]; });
+      var n = state.accounts.filter(isActive).length;
+      setSource(true, "Live · " + n + " account" + (n === 1 ? "" : "s") + " · " + usableSites().length + " properties", "Accounts (" + state.accounts.length + ")");
+      if (!state.sites.length) toast("The connected accounts have no Search Console properties.", 6000);
       loadSelection(); refresh();
-    }).catch(function(err){ setLoading(false); toast(err.message || String(err), 6000); throw err; });
+    });
   }
-  function connect(){
+  function upsertAccount(tok){
+    return fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: "Bearer " + tok.access_token } })
+      .then(function(r){ return r.ok ? r.json() : {}; })
+      .then(function(info){
+        var email = info.email || ("Google account " + (state.accounts.length + 1));
+        var acct = state.accounts.filter(function(a){ return a.email === email; })[0];
+        if (!acct){ acct = { email: email, sites: [] }; state.accounts.push(acct); }
+        acct.access_token = tok.access_token; acct.exp = tok.exp;
+        saveAccounts(); return acct;
+      });
+  }
+  function addAccount(hint){
     if (!getClientId()){ openSetup(); return; }
-    requestToken("consent").then(function(t){ state.token = t; return enterLive(); }).catch(function(err){ toast(err.message || String(err), 6000); });
+    requestToken(hint).then(upsertAccount).then(function(acct){
+      return enterLive().then(function(){ toast((hint ? "Reconnected " : "Added ") + acct.email); });
+    }).catch(function(err){ toast(err.message || String(err), 6000); });
   }
-  function disconnect(){
-    if (state.token && window.google && google.accounts && google.accounts.oauth2) try { google.accounts.oauth2.revoke(state.token.access_token, function(){}); } catch(e){}
-    state.token = null; ssSet(SS_TOKEN, null);
-    Object.keys(cache).forEach(function(k){ if (k.indexOf("live|") === 0) delete cache[k]; });
-    enterDemo(); toast("Disconnected. Showing demo data.");
+  function removeAccount(email){
+    var acct = state.accounts.filter(function(a){ return a.email === email; })[0]; if (!acct) return;
+    if (acct.access_token && window.google && google.accounts && google.accounts.oauth2) try { google.accounts.oauth2.revoke(acct.access_token, function(){}); } catch(e){}
+    state.accounts = state.accounts.filter(function(a){ return a !== acct; }); saveAccounts();
+    toast("Removed " + email);
+    enterLive();
+  }
+  function renderAccounts(){
+    var list = $("acctList"); if (!list) return;
+    list.innerHTML = state.accounts.length ? state.accounts.map(function(a){
+      var ok = isActive(a);
+      return '<li class="acct-item"><div class="acct-main"><span class="acct-email">' + esc(a.email) + '</span>' +
+        '<span class="acct-meta">' + (ok ? a.sites.length + " properties" : "Session expired") + '</span></div>' +
+        (ok ? "" : '<button type="button" class="acct-act" data-reconnect="' + esc(a.email) + '">Reconnect</button>') +
+        '<button type="button" class="acct-x" data-remove-acct="' + esc(a.email) + '" aria-label="Remove ' + esc(a.email) + '">×</button></li>';
+    }).join("") : '<li class="ms-empty">No accounts connected in this browser.</li>';
+    $("acctShared").hidden = !(state.mode === "live" && sharedIndex);
+    $("acctNote").textContent = sharedIndex
+      ? "Signed-in accounts are only visible in this browser. Everyone else sees the daily-synced data."
+      : "Signed-in accounts are only visible in this browser.";
   }
   function openSetup(){
     $("originHint").textContent = location.origin && location.origin !== "null" ? location.origin : "your site's origin (e.g. https://you.github.io)";
@@ -583,15 +691,30 @@
     var d = $("setupDlg"); if (d.showModal) d.showModal(); else d.setAttribute("open", "");
   }
   function wireSetup(){
-    var d = $("setupDlg");
+    var d = $("setupDlg"), pop = $("acctPop"), btn = $("connectBtn");
     $("dlgCancel").addEventListener("click", function(){ d.close(); });
     $("dlgSave").addEventListener("click", function(){
       var v = $("clientIdInput").value.trim();
       if (!/\.apps\.googleusercontent\.com$/.test(v)){ toast("That doesn't look like an OAuth Client ID (…apps.googleusercontent.com)."); return; }
-      lsSet(LS_CID, v); d.close(); connect();
+      lsSet(LS_CID, v); d.close(); addAccount();
     });
-    $("connectBtn").addEventListener("click", function(){ state.mode === "live" ? disconnect() : connect(); });
-    $("bannerConnect").addEventListener("click", connect);
+    function openPop(v){ pop.classList.toggle("open", v); btn.setAttribute("aria-expanded", String(v)); if (v) renderAccounts(); }
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      if (!state.accounts.length){ addAccount(); return; }
+      openPop(!pop.classList.contains("open"));
+    });
+    // ignore clicks on nodes a re-render just removed (e.g. an account's × button)
+    document.addEventListener("click", function(e){ if (e.target.isConnected && !$("acctMenu").contains(e.target)) openPop(false); });
+    document.addEventListener("keydown", function(e){ if (e.key === "Escape" && pop.classList.contains("open")){ openPop(false); btn.focus(); } });
+    $("acctAdd").addEventListener("click", function(){ openPop(false); addAccount(); });
+    $("acctShared").addEventListener("click", function(){ openPop(false); enterBase(); });
+    $("acctList").addEventListener("click", function(e){
+      var r = e.target.closest("[data-reconnect]"), x = e.target.closest("[data-remove-acct]");
+      if (r){ openPop(false); addAccount(r.getAttribute("data-reconnect")); }
+      if (x) removeAccount(x.getAttribute("data-remove-acct"));
+    });
+    $("bannerConnect").addEventListener("click", function(){ addAccount(); });
   }
 
   /* ================= boot ================= */
@@ -604,11 +727,13 @@
     var rt; window.addEventListener("resize", function(){ clearTimeout(rt); rt = setTimeout(renderTrend, 120); });
     if (window.GlassTheme) GlassTheme.onChange(function(){ renderChips(); paint(); });
 
-    // resume a still-valid session token without a popup
-    var tok; try { tok = JSON.parse(ssGet(SS_TOKEN) || "null"); } catch(e){}
-    if (tok && tok.exp > Date.now() && getClientId()){
-      state.token = tok; enterLive().catch(function(){ enterDemo(); });
-    } else enterDemo();
+    restoreAccounts();
+    loadSharedIndex().then(function(idx){
+      sharedIndex = idx;
+      // accounts signed in within the last hour resume without a popup
+      if (state.accounts.some(isActive)) enterLive().catch(function(){ enterBase(); });
+      else enterBase();
+    });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

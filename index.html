@@ -3,1259 +3,278 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Site Performance Console</title>
+<title>Search Console Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-  /* ============ TOKENS ============ */
-  :root{
-    color-scheme: light;
-    --bg: #f6f5f0;
-    --surface: #fdfcf9;
-    --surface-2: #efeee6;
-    --surface-3: #e8e6dc;
-    --text-primary: #17150f;
-    --text-secondary: #55524a;
-    --text-muted: #8b8779;
-    --border: rgba(23,21,15,0.12);
-    --border-strong: rgba(23,21,15,0.20);
-    --grid-line: #e4e2d8;
-
-    --accent: #4a3aa7;      /* portfolio / combined-view identity (violet, slot 7) */
-    --accent-soft: #4a3aa71a;
-
-    --site-mold: #2a78d6;       /* slot 1 blue */
-    --site-confined: #eb6834;   /* slot 2 orange */
-    --site-excavation: #1baf7a; /* slot 3 aqua */
-    --site-stormwater: #eda100; /* slot 4 yellow */
-
-    --good: #0ca30c;
-    --warning: #fab219;
-    --serious: #ec835a;
-    --critical: #d03b3b;
-    --delta-good: #006300;
-    --delta-bad: #d03b3b;
-
-    --shadow: 0 1px 2px rgba(23,21,15,0.06), 0 8px 24px -12px rgba(23,21,15,0.16);
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      color-scheme: dark;
-      --bg: #0e0d0b;
-      --surface: #18170f;
-      --surface-2: #201f16;
-      --surface-3: #29271b;
-      --text-primary: #f7f5ee;
-      --text-secondary: #c7c3b4;
-      --text-muted: #928d7a;
-      --border: rgba(247,245,238,0.12);
-      --border-strong: rgba(247,245,238,0.22);
-      --grid-line: #2c2a20;
-
-      --accent: #9085e9;
-      --accent-soft: #9085e926;
-
-      --site-mold: #3987e5;
-      --site-confined: #d95926;
-      --site-excavation: #199e70;
-      --site-stormwater: #c98500;
-
-      --good: #0ca30c;
-      --warning: #fab219;
-      --serious: #ec835a;
-      --critical: #e66767;
-      --delta-good: #0ca30c;
-      --delta-bad: #e66767;
-
-      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 28px -12px rgba(0,0,0,0.5);
-    }
-  }
-  :root[data-theme="dark"]{
-    color-scheme: dark;
-    --bg: #0e0d0b;
-    --surface: #18170f;
-    --surface-2: #201f16;
-    --surface-3: #29271b;
-    --text-primary: #f7f5ee;
-    --text-secondary: #c7c3b4;
-    --text-muted: #928d7a;
-    --border: rgba(247,245,238,0.12);
-    --border-strong: rgba(247,245,238,0.22);
-    --grid-line: #2c2a20;
-
-    --accent: #9085e9;
-    --accent-soft: #9085e926;
-
-    --site-mold: #3987e5;
-    --site-confined: #d95926;
-    --site-excavation: #199e70;
-    --site-stormwater: #c98500;
-
-    --good: #0ca30c;
-    --warning: #fab219;
-    --serious: #ec835a;
-    --critical: #e66767;
-    --delta-good: #0ca30c;
-    --delta-bad: #e66767;
-
-    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 28px -12px rgba(0,0,0,0.5);
-  }
-
-  *{ box-sizing: border-box; }
-  html,body{ margin:0; padding:0; }
-  body{
-    background: var(--bg);
-    color: var(--text-primary);
-    font-family: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    line-height: 1.45;
-  }
-  ::selection{ background: var(--accent-soft); }
-  a{ color: inherit; }
-  button{ font-family: inherit; }
-  :focus-visible{ outline: 2px solid var(--accent); outline-offset: 2px; }
-
-  .wrap{
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 28px 24px 64px;
-  }
-
-  /* ============ HEADER ============ */
-  .masthead{
-    display:flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 24px;
-    flex-wrap: wrap;
-    padding-bottom: 22px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 20px;
-  }
-  .eyebrow{
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin: 0 0 6px;
-  }
-  h1{
-    font-family: 'Big Shoulders Display', system-ui, sans-serif;
-    font-weight: 800;
-    font-size: 40px;
-    letter-spacing: 0.01em;
-    line-height: 1;
-    margin: 0;
-    text-wrap: balance;
-  }
-  .masthead-meta{
-    text-align: right;
-    color: var(--text-secondary);
-    font-size: 13px;
-    max-width: 280px;
-  }
-  .masthead-meta strong{ color: var(--text-primary); }
-
-  .sample-banner{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 24px;
-  }
-  .sample-banner .dot{
-    width:8px; height:8px; border-radius:50%;
-    background: var(--warning);
-    flex: none;
-  }
-  .sample-banner b{ color: var(--text-primary); }
-
-  /* ============ SITE SELECTOR ============ */
-  .selector-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    flex-wrap: wrap;
-    margin-bottom: 28px;
-  }
-  .site-chip{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding: 9px 16px 9px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: border-color .15s ease, color .15s ease, background .15s ease, box-shadow .15s ease;
-    white-space: nowrap;
-  }
-  .site-chip .swatch{
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--chip-color, var(--text-muted));
-    flex: none;
-  }
-  .site-chip:hover{ border-color: var(--border-strong); color: var(--text-primary); }
-  .site-chip[aria-pressed="true"]{
-    background: var(--chip-color, var(--accent));
-    border-color: var(--chip-color, var(--accent));
-    color: #fff;
-    box-shadow: var(--shadow);
-  }
-  .site-chip[aria-pressed="true"] .swatch{ background: #fff; }
-  .site-chip.all-chip{ font-weight: 700; }
-  .live-dot{
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--good);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--good) 30%, transparent);
-    flex: none;
-  }
-  .site-chip[aria-pressed="true"] .live-dot{ background: #fff; box-shadow: none; }
-
-  /* ============ SECTION HEADERS ============ */
-  .section-head{
-    display:flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-    margin: 40px 0 14px;
-  }
-  .section-head h2{
-    font-family: 'Big Shoulders Display', system-ui, sans-serif;
-    font-weight: 700;
-    font-size: 22px;
-    letter-spacing: 0.01em;
-    margin: 0;
-    text-transform: uppercase;
-  }
-  .section-head .section-note{
-    font-size: 12.5px;
-    color: var(--text-muted);
-  }
-  .section-head.first{ margin-top: 4px; }
-
-  /* ============ KPI TILES ============ */
-  .kpi-grid{
-    display:grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    gap: 12px;
-  }
-  .kpi-tile{
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
-    display:flex;
-    flex-direction: column;
-    gap: 6px;
-    min-width: 0;
-  }
-  .kpi-label{
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-  .kpi-value-row{
-    display:flex;
-    align-items: baseline;
-    gap: 8px;
-  }
-  .kpi-value{
-    font-family: 'Big Shoulders Display', system-ui, sans-serif;
-    font-weight: 800;
-    font-size: 30px;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.005em;
-  }
-  .kpi-delta{
-    font-size: 12.5px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    display:flex;
-    align-items:center;
-    gap:2px;
-  }
-  .kpi-delta.up{ color: var(--delta-good); }
-  .kpi-delta.down{ color: var(--delta-bad); }
-  .kpi-spark{ margin-top: 2px; height: 28px; width: 100%; }
-  .kpi-sub{ font-size: 12px; color: var(--text-muted); }
-
-  /* ============ CARDS / CHARTS ============ */
-  .chart-grid{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  @media (max-width: 760px){ .chart-grid{ grid-template-columns: 1fr; } }
-
-  .card{
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px 16px;
-  }
-  .card-head{
-    display:flex;
-    justify-content: space-between;
-    align-items:center;
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-  .card-title{ font-size: 14px; font-weight: 600; }
-  .card-title .unit{ color: var(--text-muted); font-weight: 400; }
-  .legend{
-    display:flex; gap:12px; flex-wrap:wrap;
-    font-size: 12px; color: var(--text-secondary);
-  }
-  .legend .item{ display:flex; align-items:center; gap:6px; }
-  .legend .swatch-line{ width:14px; height:3px; border-radius:2px; }
-
-  .metric-tabs{
-    display:flex; gap:4px; flex-wrap: wrap;
-    background: var(--surface-2);
-    padding: 3px;
-    border-radius: 8px;
-    width: fit-content;
-    margin-bottom: 14px;
-  }
-  .metric-tab{
-    border: none;
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 12.5px;
-    font-weight: 600;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  .metric-tab[aria-pressed="true"]{
-    background: var(--surface);
-    color: var(--text-primary);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-  }
-
-  svg.chart{ width: 100%; height: auto; display:block; overflow: visible; }
-  .axis-label{ font-size: 10px; fill: var(--text-muted); font-family: 'IBM Plex Sans', sans-serif; }
-  .gridline{ stroke: var(--grid-line); stroke-width: 1; }
-  .baseline{ stroke: var(--border-strong); stroke-width: 1; }
-
-  .tooltip{
-    position: absolute;
-    pointer-events: none;
-    background: var(--text-primary);
-    color: var(--bg);
-    font-size: 12px;
-    padding: 7px 10px;
-    border-radius: 7px;
-    box-shadow: var(--shadow);
-    white-space: nowrap;
-    opacity: 0;
-    transform: translate(-50%, -100%);
-    transition: opacity .08s ease;
-    z-index: 5;
-    line-height: 1.5;
-  }
-  .tooltip.visible{ opacity: 1; }
-  .tooltip .t-row{ display:flex; align-items:center; gap:6px; }
-  .tooltip .t-swatch{ width:7px; height:7px; border-radius:50%; flex:none; }
-  .chart-wrap{ position: relative; }
-  .chart-empty{
-    height: 200px;
-    display: flex; align-items: center; justify-content: center;
-    text-align: center; color: var(--text-muted); font-size: 13px;
-    padding: 0 20px;
-  }
-
-  .bar-row{
-    display:grid;
-    grid-template-columns: 190px 1fr 74px;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 0;
-  }
-  .bar-row .bar-label{
-    display:flex; align-items:center; gap:8px;
-    font-size: 13px; font-weight: 500;
-  }
-  .bar-row .bar-label .swatch{ width:9px; height:9px; border-radius:50%; flex:none; }
-  .bar-track{
-    background: var(--surface-2);
-    border-radius: 5px;
-    height: 16px;
-    overflow: hidden;
-    position: relative;
-  }
-  .bar-fill{
-    height: 100%;
-    border-radius: 5px;
-    min-width: 3px;
-  }
-  .bar-value{
-    font-size: 13px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-  }
-
-  /* ============ TABLES ============ */
-  .table-wrap{ overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
-  table{ width:100%; border-collapse: collapse; font-size: 13.5px; min-width: 480px; }
-  thead th{
-    text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface-2);
-    white-space: nowrap;
-  }
-  thead th.num, td.num{ text-align: right; font-variant-numeric: tabular-nums; }
-  tbody td{
-    padding: 11px 16px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-secondary);
-  }
-  tbody tr:last-child td{ border-bottom: none; }
-  tbody td.primary{ color: var(--text-primary); font-weight: 500; }
-  .site-tag{
-    display:inline-flex; align-items:center; gap:6px;
-    font-size: 12px; font-weight: 500; color: var(--text-primary);
-  }
-  .site-tag .swatch{ width:8px; height:8px; border-radius:50%; flex:none; }
-  .pos-pill{
-    display:inline-block;
-    font-size: 11.5px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 999px;
-    background: var(--surface-2);
-    color: var(--text-secondary);
-  }
-
-  .two-col{ display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 760px){ .two-col{ grid-template-columns: 1fr; } }
-
-  footer{
-    margin-top: 48px;
-    padding-top: 18px;
-    border-top: 1px solid var(--border);
-    font-size: 12px;
-    color: var(--text-muted);
-    display:flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    *{ transition: none !important; animation: none !important; }
-  }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/glass.css">
 <script src="assets/glass-theme.js"></script>
+<style>
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.45; }
+  button{ font-family: inherit; }
+  a{ color: inherit; }
+  :focus-visible{ outline: 2px solid var(--g-text); outline-offset: 2px; }
+  .wrap{ max-width: 1240px; margin: 0 auto; padding: 22px 16px 96px; }
+  @media (min-width: 700px){ .wrap{ padding: 28px 24px 96px; } }
+
+  /* top bar */
+  .topbar{ display:flex; align-items:center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 12px 14px 12px 18px; border-radius: 999px; margin-bottom: 18px; }
+  .brand{ display:flex; align-items:center; gap: 12px; min-width: 0; }
+  .brand-mark{ width: 34px; height: 34px; border-radius: 11px; flex:none; display:grid; place-items:center;
+    background: linear-gradient(135deg, rgba(255,255,255,.55), rgba(255,255,255,.12)); box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
+  .brand-mark svg{ width: 18px; height: 18px; }
+  .brand h1{ font-size: 17px; font-weight: 800; letter-spacing: -0.01em; margin:0; white-space: nowrap; }
+  .brand p{ margin:0; font-size: 12px; color: var(--g-text-3); }
+  .topbar-actions{ display:flex; align-items:center; gap: 8px; flex-wrap: wrap; }
+  .source-pill{ display:inline-flex; align-items:center; gap:7px; font-size: 12.5px; font-weight: 600; color: var(--g-text-2); padding: 0 6px; }
+  .source-pill .dot{ width: 8px; height: 8px; border-radius: 50%; background: #f5b42a; box-shadow: 0 0 0 3px rgba(245,180,42,.25); }
+  .source-pill.live .dot{ background: var(--good); box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 30%, transparent); }
+  @media (max-width: 640px){ .topbar{ border-radius: 22px; } .brand p{ display:none; } }
+
+  /* controls */
+  .controls{ display:flex; align-items:center; gap: 10px; flex-wrap: wrap; padding: 12px; border-radius: 22px; margin-bottom: 12px; position: relative; z-index: 20; }
+  .controls .spacer{ flex: 1; }
+  .ms{ position: relative; }
+  .ms-trigger{ min-width: 230px; justify-content: space-between; }
+  .ms-trigger .count{ font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.18); }
+  .ms-pop{ position:absolute; left:0; top: calc(100% + 8px); width: min(380px, calc(100vw - 32px)); padding: 10px; display:none; z-index: 40;
+    --g-tint: rgba(10,12,24,0.45); }
+  html[data-tone="light"] .ms-pop{ --g-tint: rgba(255,255,255,0.55); }
+  .ms-pop.open{ display:block; }
+  .ms-search{ width:100%; font: inherit; font-size: 14px; color: var(--g-text); background: rgba(255,255,255,.1); border: 1px solid var(--g-edge-soft); border-radius: 12px; padding: 9px 12px; }
+  .ms-search::placeholder{ color: var(--g-text-3); }
+  .ms-bulk{ display:flex; gap: 6px; margin: 8px 0 6px; }
+  .ms-bulk button{ font: inherit; font-size: 12px; font-weight: 600; color: var(--g-text-2); background: transparent; border: 1px solid var(--g-edge-soft); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+  .ms-bulk button:hover{ color: var(--g-text); background: rgba(255,255,255,.08); }
+  .ms-list{ max-height: 320px; overflow-y: auto; margin: 0; padding: 0; list-style: none; }
+  .ms-item label{ display:flex; align-items:center; gap: 10px; padding: 8px 8px; border-radius: 10px; cursor: pointer; font-size: 13.5px; }
+  .ms-item label:hover{ background: rgba(255,255,255,.08); }
+  .ms-item input{ width: 17px; height: 17px; accent-color: var(--accent); flex:none; margin:0; }
+  .ms-item .ms-name{ flex:1; min-width:0; overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ms-item .ms-kind{ font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--g-text-3); }
+  .ms-empty{ padding: 14px 8px; font-size: 13px; color: var(--g-text-3); }
+
+  .seg{ display:inline-flex; gap: 3px; padding: 4px; border-radius: 999px; flex-wrap: wrap; }
+  .seg button{ font: inherit; font-size: 12.5px; font-weight: 600; border: none; background: transparent; color: var(--g-text-2); padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+  .seg button:hover{ color: var(--g-text); }
+  .seg button[aria-pressed="true"]{ color: var(--g-text); background: linear-gradient(160deg, var(--g-fill-strong), rgba(255,255,255,.08)); box-shadow: inset 0 1px 0 var(--g-hi), 0 3px 10px -4px rgba(0,0,0,.35); }
+  .range-note{ font-size: 12px; color: var(--g-text-3); }
+
+  .chips{ display:flex; gap: 8px; flex-wrap: wrap; margin: 0 0 20px; min-height: 8px; }
+  .chip{ display:inline-flex; align-items:center; gap: 8px; padding: 6px 6px 6px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600; }
+  .chip .sw{ width: 9px; height: 9px; border-radius: 50%; flex:none; }
+  .chip button{ width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(255,255,255,.14); color: var(--g-text); cursor: pointer; display:grid; place-items:center; padding:0; font-size: 14px; line-height: 1; }
+  .chip button:hover{ background: rgba(255,255,255,.28); }
+
+  /* KPI */
+  .kpis{ display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 14px; }
+  .kpi{ padding: 16px 18px 14px; border-radius: var(--glass-radius); display:flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .kpi-label{ font-size: 11.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--g-text-3); }
+  .kpi-row{ display:flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .kpi-value{ font-size: 32px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .delta{ font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .delta.up{ color: var(--good); } .delta.down{ color: var(--bad); } .delta.flat{ color: var(--g-text-3); }
+  .kpi-sub{ font-size: 12px; color: var(--g-text-3); }
+  .kpi svg{ width: 100%; height: 34px; display:block; margin-top: 4px; }
+
+  /* cards */
+  .card{ padding: 18px 20px; border-radius: var(--glass-radius); min-width: 0; }
+  .card-head{ display:flex; align-items:center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .card-title{ font-size: 15px; font-weight: 700; margin: 0; }
+  .card-note{ font-size: 12px; color: var(--g-text-3); }
+  .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  @media (max-width: 860px){ .grid-2{ grid-template-columns: 1fr; } }
+
+  .legend{ display:flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--g-text-2); margin: 2px 0 8px; }
+  .legend span{ display:inline-flex; align-items:center; gap: 6px; }
+  .legend i{ width: 14px; height: 3px; border-radius: 2px; display:inline-block; }
+  .chart-wrap{ position: relative; }
+  svg.chart{ width: 100%; display:block; overflow: visible; }
+  .axis{ font-size: 10.5px; fill: var(--g-text-3); font-family: inherit; }
+  .tip{ position:absolute; pointer-events:none; z-index: 10; min-width: 160px; padding: 9px 11px; border-radius: 12px; font-size: 12px; line-height: 1.55;
+    background: var(--g-tooltip-bg); color: var(--g-tooltip-text); border: 1px solid var(--g-edge-soft);
+    -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
+    box-shadow: var(--g-shadow); opacity: 0; transition: opacity .08s ease; white-space: nowrap; }
+  .tip.show{ opacity: 1; }
+  .tip b{ display:block; margin-bottom: 3px; }
+  .tip .r{ display:flex; align-items:center; gap: 7px; }
+  .tip .r i{ width: 8px; height: 8px; border-radius: 50%; flex:none; }
+  .tip .r em{ font-style: normal; margin-left: auto; padding-left: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .empty{ min-height: 180px; display:flex; align-items:center; justify-content:center; text-align:center; color: var(--g-text-3); font-size: 13.5px; padding: 20px; }
+
+  /* tables */
+  .tbl-wrap{ overflow-x: auto; margin: 0 -6px; }
+  table{ width: 100%; border-collapse: collapse; font-size: 13px; }
+  th{ text-align:left; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--g-text-3); padding: 8px 6px; border-bottom: 1px solid var(--g-edge-soft); white-space: nowrap; }
+  th.n, td.n{ text-align: right; font-variant-numeric: tabular-nums; }
+  th button{ font: inherit; color: inherit; background: none; border: none; padding: 0; cursor: pointer; letter-spacing: inherit; text-transform: inherit; }
+  th button[aria-sort]::after{ content: " ↓"; }
+  td{ padding: 9px 6px; border-bottom: 1px solid var(--g-edge-soft); color: var(--g-text-2); vertical-align: middle; }
+  tr:last-child td{ border-bottom: none; }
+  td.main{ color: var(--g-text); font-weight: 500; max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #pagesTable td.main, #queriesTable td.main{ max-width: 220px; }
+  td.main a{ text-decoration: none; } td.main a:hover{ text-decoration: underline; }
+  .dots{ display:inline-flex; gap: 3px; vertical-align: middle; }
+  .dots i{ width: 8px; height: 8px; border-radius: 50%; display:inline-block; box-shadow: 0 0 0 1.5px rgba(255,255,255,.3); }
+  .share{ display:flex; align-items:center; gap: 8px; min-width: 120px; }
+  .share .track{ flex:1; height: 8px; border-radius: 4px; background: rgba(255,255,255,.12); overflow:hidden; }
+  html[data-tone="light"] .share .track{ background: rgba(14,18,32,.08); }
+  .share .fill{ height: 100%; border-radius: 4px; }
+  .share span{ font-size: 12px; font-variant-numeric: tabular-nums; width: 42px; text-align: right; }
+  .tbl-tools{ display:flex; gap: 8px; align-items:center; }
+  .tbl-search{ font: inherit; font-size: 13px; color: var(--g-text); background: rgba(255,255,255,.1); border: 1px solid var(--g-edge-soft); border-radius: 999px; padding: 7px 12px; width: 190px; max-width: 100%; }
+  .tbl-search::placeholder{ color: var(--g-text-3); }
+  .more{ margin-top: 10px; }
+
+  /* bars */
+  .bars{ display:flex; flex-direction: column; gap: 9px; }
+  .bar{ display:grid; grid-template-columns: minmax(90px, 150px) 1fr auto; align-items:center; gap: 10px; font-size: 13px; }
+  .bar .lbl{ overflow:hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--g-text); }
+  .bar .track{ height: 12px; border-radius: 6px; background: rgba(255,255,255,.10); overflow:hidden; }
+  html[data-tone="light"] .bar .track{ background: rgba(14,18,32,.07); }
+  .bar .fill{ height: 100%; border-radius: 6px; background: var(--accent); min-width: 3px; }
+  .bar .val{ font-variant-numeric: tabular-nums; font-weight: 600; color: var(--g-text-2); font-size: 12.5px; }
+
+  /* banner, dialog, toast */
+  .banner{ display:flex; gap: 12px; align-items:center; padding: 12px 16px; border-radius: 16px; font-size: 13px; color: var(--g-text-2); margin-bottom: 14px; flex-wrap: wrap; }
+  .banner b{ color: var(--g-text); }
+  .banner .glass-btn{ margin-left: auto; padding: 7px 14px; font-size: 12.5px; }
+  .loading{ position: relative; }
+  .loading::after{ content:""; position:absolute; left: 20px; right: 20px; top: 0; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, transparent, var(--g-text), transparent); background-size: 200% 100%; animation: shimmer 1.1s linear infinite; }
+  @keyframes shimmer{ from{ background-position: 200% 0; } to{ background-position: -200% 0; } }
+
+  dialog.glass-panel{ color: var(--g-text); border: none; padding: 22px; width: min(520px, calc(100vw - 32px)); --g-tint: rgba(10,12,24,.55); }
+  html[data-tone="light"] dialog.glass-panel{ --g-tint: rgba(255,255,255,.6); }
+  dialog::backdrop{ background: rgba(0,0,0,.35); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+  dialog h2{ margin: 0 0 6px; font-size: 18px; }
+  dialog p, dialog li{ font-size: 13px; color: var(--g-text-2); }
+  dialog ol{ padding-left: 18px; margin: 8px 0 14px; }
+  dialog code{ font-size: 12px; padding: 1px 5px; border-radius: 5px; background: rgba(255,255,255,.12); }
+  dialog input{ width: 100%; font: inherit; font-size: 13px; color: var(--g-text); background: rgba(255,255,255,.1); border: 1px solid var(--g-edge-soft); border-radius: 12px; padding: 10px 12px; }
+  .dlg-actions{ display:flex; justify-content: flex-end; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .toast{ position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 80; padding: 11px 16px; border-radius: 14px; font-size: 13px; max-width: calc(100vw - 32px); display:none; --g-tint: rgba(10,12,24,.55); }
+  html[data-tone="light"] .toast{ --g-tint: rgba(255,255,255,.6); }
+  .toast.show{ display:block; }
+  footer{ margin-top: 28px; font-size: 12px; color: var(--g-text-3); display:flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce){ *{ transition: none !important; animation: none !important; } }
+</style>
 </head>
 <body>
-
 <div class="wrap">
 
-  <div class="masthead">
-    <div>
-      <p class="eyebrow">Compliance Training Portfolio</p>
-      <h1>Site Performance Console</h1>
+  <header class="topbar glass-panel">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg></div>
+      <div><h1>Search Console Dashboard</h1><p>Combined Google Search performance across your properties</p></div>
     </div>
-    <div class="masthead-meta">
-      <a class="glass-btn" href="search-console.html" style="margin-bottom:10px;">Search Console dashboard →</a><br>
-      Tracking <strong>4 sites</strong> &middot; last updated <strong id="asOfDate">—</strong>
+    <div class="topbar-actions">
+      <span class="source-pill" id="sourcePill"><span class="dot"></span><span id="sourceText">Demo data</span></span>
+      <button class="glass-btn primary" id="connectBtn" type="button">Connect Google</button>
     </div>
+  </header>
+
+  <div class="banner glass-panel" id="demoBanner">
+    <span><b>You're viewing demo data.</b> Connect your Google account to load every property in your Search Console — nothing is stored on a server; data stays in your browser.</span>
+    <button class="glass-btn" type="button" id="bannerConnect">Connect</button>
   </div>
 
-  <div class="sample-banner">
-    <span class="dot"></span>
-    <span id="sampleBannerText"><b>Mixed data.</b> Loading Ahrefs status…</span>
+  <section class="controls glass-panel" aria-label="Filters">
+    <div class="ms" id="siteMs">
+      <button class="glass-btn ms-trigger" type="button" id="msTrigger" aria-haspopup="listbox" aria-expanded="false">
+        <span id="msLabel">Select sites</span><span class="count" id="msCount">0</span>
+      </button>
+      <div class="ms-pop glass-panel" id="msPop">
+        <input class="ms-search" id="msSearch" type="search" placeholder="Filter properties…" aria-label="Filter properties">
+        <div class="ms-bulk"><button type="button" id="msAll">Select all</button><button type="button" id="msNone">Clear</button><button type="button" id="msOnly" hidden>Only matches</button></div>
+        <ul class="ms-list" id="msList" role="listbox" aria-multiselectable="true"></ul>
+      </div>
+    </div>
+    <div class="seg glass-panel" id="rangeSeg" role="group" aria-label="Date range"></div>
+    <span class="spacer"></span>
+    <span class="range-note" id="rangeNote"></span>
+  </section>
+
+  <div class="chips" id="chips" aria-label="Selected sites"></div>
+
+  <section class="kpis" id="kpis" aria-label="Totals"></section>
+
+  <section class="card glass-panel" id="trendCard">
+    <div class="card-head">
+      <h2 class="card-title" id="trendTitle">Performance</h2>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div class="seg glass-panel" id="metricSeg" role="group" aria-label="Metric"></div>
+        <div class="seg glass-panel" id="modeSeg" role="group" aria-label="Chart mode"></div>
+      </div>
+    </div>
+    <div class="legend" id="trendLegend"></div>
+    <div class="chart-wrap" id="trendChart"></div>
+  </section>
+
+  <section class="card glass-panel" style="margin-top:14px;">
+    <div class="card-head"><h2 class="card-title">Sites breakdown</h2><span class="card-note">Each selected property's share of the combined totals</span></div>
+    <div class="tbl-wrap"><table id="sitesTable"></table></div>
+  </section>
+
+  <div class="grid-2">
+    <section class="card glass-panel">
+      <div class="card-head">
+        <h2 class="card-title">Top queries <span class="card-note">combined</span></h2>
+        <div class="tbl-tools"><input class="tbl-search" id="qSearch" type="search" placeholder="Search queries…" aria-label="Search queries"></div>
+      </div>
+      <div class="tbl-wrap"><table id="queriesTable"></table></div>
+      <button class="glass-btn more" id="qMore" type="button" hidden>Show more</button>
+    </section>
+    <section class="card glass-panel">
+      <div class="card-head">
+        <h2 class="card-title">Top pages</h2>
+        <div class="tbl-tools"><input class="tbl-search" id="pSearch" type="search" placeholder="Search pages…" aria-label="Search pages"></div>
+      </div>
+      <div class="tbl-wrap"><table id="pagesTable"></table></div>
+      <button class="glass-btn more" id="pMore" type="button" hidden>Show more</button>
+    </section>
   </div>
 
-  <div class="selector-row" id="siteSelector" role="tablist" aria-label="Select site"></div>
-
-  <!-- SEARCH VISIBILITY -->
-  <div class="section-head first">
-    <h2 id="seoHeading">Search Visibility</h2>
-    <span class="section-note" id="seoSourceNote">Source: Ahrefs (sample)</span>
-  </div>
-  <div class="metric-tabs" id="rangeTabs" role="tablist" aria-label="Date range"></div>
-  <div class="kpi-grid" id="seoKpis"></div>
-
-  <div class="chart-grid" style="margin-top:16px;" id="seoCharts"></div>
-
-  <div class="two-col" style="margin-top:16px;">
-    <div class="table-wrap">
-      <table id="keywordsTable">
-        <thead><tr><th id="kwCol1">Top keyword</th><th class="num">Position</th><th class="num">Volume</th><th class="num">Est. traffic</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div class="card" id="compareCardSeo" style="display:none;">
-      <div class="card-head"><span class="card-title">Sites compared</span></div>
-      <div class="metric-tabs" id="seoMetricTabs"></div>
-      <div id="seoBars"></div>
-    </div>
+  <div class="grid-2">
+    <section class="card glass-panel">
+      <div class="card-head"><h2 class="card-title">Countries</h2><span class="card-note">Clicks, combined</span></div>
+      <div class="bars" id="countryBars"></div>
+    </section>
+    <section class="card glass-panel">
+      <div class="card-head"><h2 class="card-title">Devices</h2><span class="card-note">Clicks, combined</span></div>
+      <div class="bars" id="deviceBars"></div>
+    </section>
   </div>
 
   <footer>
-    <span>Site Performance Console &middot; mixed live/sample dataset</span>
-    <span id="footerSites"></span>
+    <span>Clicks &amp; impressions are summed; CTR = total clicks ÷ total impressions; position is impression-weighted.</span>
+    <span id="footerStamp"></span>
   </footer>
-
 </div>
 
-<script>
-(function(){
-  "use strict";
+<dialog class="glass-panel" id="setupDlg">
+  <h2>Connect Google Search Console</h2>
+  <p>This dashboard calls the Search Console API straight from your browser with read-only access. It needs an OAuth Client ID (one-time setup, ~3 minutes):</p>
+  <ol>
+    <li>In <a href="https://console.cloud.google.com/apis/library/searchconsole.googleapis.com" target="_blank" rel="noopener">Google Cloud Console</a>, enable the <b>Google Search Console API</b>.</li>
+    <li>Configure the OAuth consent screen (External or Internal) and add yourself as a test user.</li>
+    <li>Create credentials → <b>OAuth client ID</b> → <b>Web application</b>. Add <code id="originHint"></code> under <i>Authorized JavaScript origins</i>.</li>
+    <li>Paste the Client ID below (or commit it to <code>gsc-config.js</code>).</li>
+  </ol>
+  <label for="clientIdInput" class="sr-only">OAuth Client ID</label>
+  <input id="clientIdInput" placeholder="1234567890-abc123.apps.googleusercontent.com" spellcheck="false">
+  <div class="dlg-actions">
+    <button class="glass-btn" type="button" id="dlgCancel">Cancel</button>
+    <button class="glass-btn primary" type="button" id="dlgSave">Save &amp; connect</button>
+  </div>
+</dialog>
 
-  function isoDate(d){ return d.toISOString().slice(0,10); }
-  function trailingMonthDates(n){
-    var out = [];
-    var now = new Date();
-    for (var i=n-1;i>=0;i--){
-      out.push(isoDate(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth()-i, 1))));
-    }
-    return out;
-  }
-  // Sample sites only ship a flat 12-point monthly trend; expand that into
-  // the same {daily, monthly} history shape the live Ahrefs data uses, so
-  // the range filter works identically whether data is live or sample.
-  // Daily is left empty on purpose: Ahrefs doesn't track Domain Rating or
-  // organic traffic at daily resolution for any of these sites (confirmed
-  // against the live API — daily-grouped history comes back empty even for
-  // domains with years of monthly history), so sample data shouldn't fake
-  // a granularity real data can never actually show.
-  function synthHistory(monthlyDR, monthlyTraffic){
-    var monthDates = trailingMonthDates(monthlyDR.length);
-    return {
-      monthly: {
-        dr: monthDates.map(function(d,i){ return { date: d, value: monthlyDR[i] }; }),
-        traffic: monthDates.map(function(d,i){ return { date: d, value: monthlyTraffic[i] }; })
-      },
-      daily: { dr: [], traffic: [] }
-    };
-  }
+<div class="toast glass-panel" id="toast" role="status" aria-live="polite"></div>
 
-  var SITES = [
-    {
-      id: "mold", name: "Mold Training", domain: "moldtraining.us", colorVar: "--site-mold",
-      seo: {
-        dr: 24, organicTraffic: 3200, organicKeywords: 410, referringDomains: 86,
-        keywords: [
-          { k: "mold inspector certification", pos: 3, vol: 720, traffic: 210 },
-          { k: "mold remediation training online", pos: 5, vol: 480, traffic: 95 },
-          { k: "IICRC mold course", pos: 2, vol: 260, traffic: 88 },
-          { k: "how to become a mold inspector", pos: 9, vol: 590, traffic: 41 }
-        ],
-        history: synthHistory(
-          [21,21,22,22,23,23,23,24,24,24,24,24],
-          [2600,2700,2750,2800,2900,2950,3000,3050,3100,3150,3180,3200]
-        )
-      }
-    },
-    {
-      id: "confined", name: "Confined Space", domain: "confined-space.com", colorVar: "--site-confined",
-      seo: {
-        dr: 0, organicTraffic: 0, organicKeywords: 0, referringDomains: 336,
-        referringDomainsNote: "336 linking domains — mostly low-quality paid-backlink packages; Ahrefs discounts them, which is why Domain Rating stays at 0",
-        keywords: [],
-        history: synthHistory(
-          [0,0,0,0,0,0,0,0,0,0,0,0],
-          [0,0,0,0,0,0,0,0,0,0,0,0]
-        )
-      }
-    },
-    {
-      id: "excavation", name: "Excavation, Trenching & Shoring", domain: "excavationtrenchingshoring.com", colorVar: "--site-excavation",
-      seo: {
-        dr: 19, organicTraffic: 2100, organicKeywords: 290, referringDomains: 54,
-        keywords: [
-          { k: "trenching and shoring training", pos: 3, vol: 390, traffic: 88 },
-          { k: "competent person excavation", pos: 5, vol: 320, traffic: 61 },
-          { k: "OSHA excavation safety course", pos: 7, vol: 410, traffic: 48 },
-          { k: "trench collapse prevention training", pos: 11, vol: 180, traffic: 14 }
-        ],
-        history: synthHistory(
-          [16,17,17,17,18,18,18,19,19,19,19,19],
-          [1700,1750,1800,1850,1880,1900,1950,1980,2000,2050,2080,2100]
-        )
-      }
-    },
-    {
-      id: "stormwater", name: "Stormwater Planning", domain: "stormwaterplanning.us", colorVar: "--site-stormwater",
-      seo: {
-        dr: 27, organicTraffic: 4300, organicKeywords: 380, referringDomains: 97,
-        keywords: [
-          { k: "SWPPP training course", pos: 2, vol: 610, traffic: 175 },
-          { k: "stormwater pollution prevention plan template", pos: 8, vol: 940, traffic: 82 },
-          { k: "qualified SWPPP practitioner", pos: 3, vol: 210, traffic: 64 },
-          { k: "stormwater compliance training", pos: 6, vol: 260, traffic: 39 }
-        ],
-        history: synthHistory(
-          [23,24,24,25,25,26,26,26,27,27,27,27],
-          [3400,3500,3600,3700,3800,3900,3980,4050,4120,4200,4250,4300]
-        )
-      }
-    }
-  ];
-
-  var state = { active: "all", range: "12m" };
-
-  var RANGE_OPTIONS = [
-    { key: "1d", label: "1D", granularity: "daily", count: 2 },
-    { key: "1w", label: "1W", granularity: "daily", count: 7 },
-    { key: "1m", label: "1M", granularity: "daily", count: 30 },
-    { key: "3m", label: "3M", granularity: "monthly", count: 3 },
-    { key: "6m", label: "6M", granularity: "monthly", count: 6 },
-    { key: "12m", label: "12M", granularity: "monthly", count: 12 },
-    { key: "all", label: "All", granularity: "monthly", count: Infinity }
-  ];
-  var RANGE_TEXT = {
-    "1d": "last day", "1w": "last week", "1m": "last month",
-    "3m": "last 3 months", "6m": "last 6 months", "12m": "last 12 months", "all": "all time"
-  };
-  var RANGE_SUFFIX = {
-    "1d": "1d", "1w": "7d", "1m": "30d", "3m": "3mo", "6m": "6mo", "12m": "12mo", "all": "all-time"
-  };
-  function rangeOpt(key){ return RANGE_OPTIONS.filter(function(o){ return o.key === key; })[0]; }
-
-  /* ---------- helpers ---------- */
-  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-  function fmtInt(n){ var r = Math.round(n); if (r === 0) r = 0; return r.toLocaleString("en-US"); }
-  function fmtFixed(n, digits){ var v = Number(n.toFixed(digits)); if (v === 0) v = 0; return v.toFixed(digits); }
-  function fmtPct(n){ return n.toFixed(1) + "%"; }
-  function fmtTime(sec){
-    var m = Math.floor(sec/60), s = Math.round(sec%60);
-    return m + "m " + (s<10?"0":"") + s + "s";
-  }
-  function pct(from, to){ if (!from) return to ? 100 : 0; return ((to - from) / from) * 100; }
-  function el(tag, cls, html){
-    var e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (html !== undefined) e.innerHTML = html;
-    return e;
-  }
-  function siteById(id){ for (var i=0;i<SITES.length;i++) if (SITES[i].id===id) return SITES[i]; return null; }
-
-  /* ---------- history helpers (date-keyed points power the range filter) ---------- */
-  function pointsFor(site, metric, rangeKey){
-    var opt = rangeOpt(rangeKey);
-    var pts = (site.seo.history && site.seo.history[opt.granularity] && site.seo.history[opt.granularity][metric]) || [];
-    pts = pts.slice().sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
-    if (isFinite(opt.count)) pts = pts.slice(Math.max(0, pts.length - opt.count));
-    return pts;
-  }
-  function buildGrid(pointArrays){
-    var set = {};
-    pointArrays.forEach(function(pts){ pts.forEach(function(p){ set[p.date] = true; }); });
-    return Object.keys(set).sort();
-  }
-  function alignPoint(pts, date){
-    for (var i=0;i<pts.length;i++) if (pts[i].date === date) return pts[i].value;
-    return null;
-  }
-  function alignToGrid(pts, grid){
-    return grid.map(function(d){ return alignPoint(pts, d); });
-  }
-  function fmtPointLabel(iso, granularity, rangeKey){
-    var d = new Date(String(iso).slice(0,10) + "T00:00:00Z");
-    if (granularity === "daily"){
-      return new Intl.DateTimeFormat("en-US", { month:"short", day:"numeric", timeZone:"UTC" }).format(d);
-    }
-    var opts = { month:"short", timeZone:"UTC" };
-    if (rangeKey === "all") opts.year = "2-digit";
-    return new Intl.DateTimeFormat("en-US", opts).format(d);
-  }
-
-  // Combined history for "All Sites": mean Domain Rating, summed traffic,
-  // per date. Sites can have different history depths (esp. for "all
-  // time"), so this is grid-aligned rather than assumed index-aligned.
-  function combineGranularity(granularity){
-    var drSets = SITES.map(function(s){ return (s.seo.history[granularity] && s.seo.history[granularity].dr) || []; });
-    var trafficSets = SITES.map(function(s){ return (s.seo.history[granularity] && s.seo.history[granularity].traffic) || []; });
-    var drGrid = buildGrid(drSets);
-    var trafficGrid = buildGrid(trafficSets);
-    var dr = drGrid.map(function(date){
-      var vals = drSets.map(function(pts){ return alignPoint(pts, date); }).filter(function(v){ return v != null; });
-      return { date: date, value: vals.length ? vals.reduce(function(a,b){ return a+b; }, 0) / vals.length : null };
-    });
-    var traffic = trafficGrid.map(function(date){
-      var vals = trafficSets.map(function(pts){ return alignPoint(pts, date); });
-      return { date: date, value: vals.reduce(function(a,b){ return a + (b==null?0:b); }, 0) };
-    });
-    return { dr: dr, traffic: traffic };
-  }
-
-  /* aggregate across all sites for combined view */
-  function aggregate(){
-    var n = SITES.length;
-    var sumSeo = { dr:0, organicTraffic:0, organicKeywords:0, referringDomains:0 };
-    SITES.forEach(function(s){
-      sumSeo.dr += s.seo.dr;
-      sumSeo.organicTraffic += s.seo.organicTraffic;
-      sumSeo.organicKeywords += s.seo.organicKeywords;
-      sumSeo.referringDomains += s.seo.referringDomains;
-    });
-    var allKeywords = [];
-    SITES.forEach(function(s){
-      s.seo.keywords.slice(0,2).forEach(function(k){ allKeywords.push(Object.assign({ site:s }, k)); });
-    });
-    allKeywords.sort(function(a,b){ return b.traffic - a.traffic; });
-    return {
-      id: "all", name: "All Sites Combined", domain: SITES.length + " sites",
-      colorVar: "--accent",
-      seo: {
-        dr: sumSeo.dr / n,
-        organicTraffic: sumSeo.organicTraffic, organicKeywords: sumSeo.organicKeywords, referringDomains: sumSeo.referringDomains,
-        keywords: allKeywords,
-        history: { daily: combineGranularity("daily"), monthly: combineGranularity("monthly") }
-      }
-    };
-  }
-
-  /* ---------- site selector ---------- */
-  function renderSelector(){
-    var wrap = document.getElementById("siteSelector");
-    wrap.innerHTML = "";
-    var allChip = el("button", "site-chip all-chip");
-    allChip.setAttribute("role","tab");
-    allChip.innerHTML = '<span class="swatch"></span><span>All Sites Combined</span>';
-    allChip.style.setProperty("--chip-color", cssVar("--accent"));
-    allChip.addEventListener("click", function(){ setActive("all"); });
-    wrap.appendChild(allChip);
-
-    SITES.forEach(function(s){
-      var chip = el("button", "site-chip");
-      chip.setAttribute("role","tab");
-      chip.innerHTML = '<span class="swatch"></span><span>' + s.name + '</span>' +
-        (s.liveSeo ? '<span class="live-dot" title="Live SEO data from Ahrefs"></span>' : '');
-      chip.style.setProperty("--chip-color", cssVar(s.colorVar));
-      chip.addEventListener("click", function(){ setActive(s.id); });
-      wrap.appendChild(chip);
-    });
-    updateSelectorPressed();
-  }
-  function updateSelectorPressed(){
-    var chips = document.querySelectorAll("#siteSelector .site-chip");
-    chips.forEach(function(c, i){
-      var id = i === 0 ? "all" : SITES[i-1].id;
-      c.setAttribute("aria-pressed", id === state.active ? "true" : "false");
-    });
-  }
-
-  /* ---------- KPI rendering ---------- */
-  function kpiTile(label, value, deltaText, deltaDir, sub, sparkValues, color){
-    var tile = el("div", "kpi-tile");
-    tile.appendChild(el("div", "kpi-label", label));
-    var row = el("div", "kpi-value-row");
-    row.appendChild(el("div", "kpi-value", value));
-    if (deltaText){
-      row.appendChild(el("div", "kpi-delta " + deltaDir, (deltaDir==="up"?"▲ ":"▼ ") + deltaText));
-    }
-    tile.appendChild(row);
-    if (sub) tile.appendChild(el("div", "kpi-sub", sub));
-    if (sparkValues){
-      var s = el("div", "kpi-spark");
-      s.innerHTML = sparkSVG(sparkValues, color);
-      tile.appendChild(s);
-    }
-    return tile;
-  }
-
-  function sparkSVG(values, color){
-    var w = 240, h = 28, pad = 3;
-    var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
-    if (min === max){ min -= 1; max += 1; }
-    var pts = values.map(function(v, i){
-      var x = pad + (i/(values.length-1)) * (w - pad*2);
-      var y = h - pad - ((v-min)/(max-min)) * (h - pad*2);
-      return [x,y];
-    });
-    var d = "M" + pts.map(function(p){ return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" L");
-    var last = pts[pts.length-1];
-    return '<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" style="width:100%;height:100%;overflow:visible;">'+
-      '<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+
-      '<circle cx="'+last[0].toFixed(1)+'" cy="'+last[1].toFixed(1)+'" r="2.6" fill="'+color+'"/>'+
-      '</svg>';
-  }
-
-  function renderSeoKpis(data, color){
-    var wrap = document.getElementById("seoKpis");
-    wrap.innerHTML = "";
-    var drVals = pointsFor(data, "dr", state.range).map(function(p){ return p.value; }).filter(function(v){ return v != null; });
-    var trafficVals = pointsFor(data, "traffic", state.range).map(function(p){ return p.value; }).filter(function(v){ return v != null; });
-    var d0 = drVals.length ? drVals[0] : null, d1 = data.seo.dr;
-    var t0 = trafficVals.length ? trafficVals[0] : null, t1 = data.seo.organicTraffic;
-    var drDelta = d0 != null ? d1 - d0 : 0;
-    var trafficDelta = t0 != null ? pct(t0, t1) : 0;
-    var suffix = RANGE_SUFFIX[state.range];
-    var drDeltaText = (d0 != null && Math.abs(drDelta) > 0.05) ? (Math.abs(drDelta).toFixed(1) + " pts / " + suffix) : null;
-    var trafficDeltaText = (t0 != null && Math.abs(trafficDelta) > 0.05) ? (Math.abs(trafficDelta).toFixed(0) + "% / " + suffix) : null;
-    var drSub = (data.liveSeo && data.seoAsOf) ? ("as of " + fmtAsOf(data.seoAsOf)) : null;
-
-    wrap.appendChild(kpiTile("Domain Rating", data.seo.dr.toFixed(state.active==="all"?1:0),
-      drDeltaText, drDelta>=0?"up":"down", drSub, drVals.length > 1 ? drVals : null, color));
-    wrap.appendChild(kpiTile("Organic Traffic / mo", fmtInt(data.seo.organicTraffic),
-      trafficDeltaText, trafficDelta>=0?"up":"down", "estimated visits", trafficVals.length > 1 ? trafficVals : null, color));
-    wrap.appendChild(kpiTile("Organic Keywords", fmtInt(data.seo.organicKeywords), null, null, "ranking in top 100"));
-    wrap.appendChild(kpiTile("Referring Domains", fmtInt(data.seo.referringDomains), null, null, data.seo.referringDomainsNote || "unique linking domains"));
-  }
-
-  function fmtAsOf(iso){
-    var d = new Date(iso + "T00:00:00");
-    return d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
-  }
-
-
-  /* ---------- line chart with hover ---------- */
-  function buildLineChart(container, series, opts){
-    opts = opts || {};
-    var labels = opts.labels;
-    var w = 520, h = 200, padL = 40, padR = 14, padT = 14, padB = 24;
-    var innerW = w - padL - padR, innerH = h - padT - padB;
-
-    var allVals = [];
-    series.forEach(function(s){ allVals = allVals.concat(s.values.filter(function(v){ return v != null; })); });
-    if (!allVals.length) allVals = [0, 1];
-    var min = Math.min.apply(null, allVals), max = Math.max.apply(null, allVals);
-    var span = max - min || 1;
-    min -= span*0.08; max += span*0.08;
-
-    function xAt(i){ return padL + (labels.length===1 ? 0.5 : i/(labels.length-1)) * innerW; }
-    function yAt(v){ return padT + innerH - ((v-min)/(max-min)) * innerH; }
-    function segments(pts){
-      var out = [], cur = [];
-      pts.forEach(function(p){
-        if (p == null){ if (cur.length) out.push(cur); cur = []; }
-        else cur.push(p);
-      });
-      if (cur.length) out.push(cur);
-      return out;
-    }
-    function lastNonNull(pts){
-      for (var i=pts.length-1;i>=0;i--) if (pts[i]) return pts[i];
-      return null;
-    }
-
-    var svgns = "http://www.w3.org/2000/svg";
-    var svg = document.createElementNS(svgns, "svg");
-    svg.setAttribute("viewBox", "0 0 " + w + " " + h);
-    svg.setAttribute("class", "chart");
-    svg.setAttribute("role", "img");
-    svg.setAttribute("aria-label", opts.ariaLabel || "line chart");
-
-    var gridCount = 4;
-    for (var g=0; g<=gridCount; g++){
-      var gy = padT + (innerH/gridCount)*g;
-      var line = document.createElementNS(svgns, "line");
-      line.setAttribute("x1", padL); line.setAttribute("x2", w-padR);
-      line.setAttribute("y1", gy); line.setAttribute("y2", gy);
-      line.setAttribute("class", "gridline");
-      svg.appendChild(line);
-      var val = max - ((max-min)/gridCount)*g;
-      var label = document.createElementNS(svgns, "text");
-      label.setAttribute("x", 2); label.setAttribute("y", gy+3);
-      label.setAttribute("class", "axis-label");
-      label.textContent = opts.yFormat ? opts.yFormat(val) : Math.round(val);
-      svg.appendChild(label);
-    }
-
-    var labelStep = labels.length > 8 ? Math.ceil(labels.length/8) : 1;
-    labels.forEach(function(m, i){
-      if (i % labelStep !== 0 && i !== labels.length-1) return;
-      var t = document.createElementNS(svgns, "text");
-      t.setAttribute("x", xAt(i)); t.setAttribute("y", h-4);
-      t.setAttribute("class", "axis-label");
-      t.setAttribute("text-anchor", i===0 ? "start" : (i===labels.length-1 ? "end" : "middle"));
-      t.textContent = m;
-      svg.appendChild(t);
-    });
-
-    series.forEach(function(s){
-      var gradId = "grad-" + Math.random().toString(36).slice(2);
-      var pts = s.values.map(function(v,i){ return v == null ? null : [xAt(i), yAt(v)]; });
-      var segs = segments(pts);
-
-      if (series.length === 1 && segs.length){
-        var defs = document.createElementNS(svgns, "defs");
-        var grad = document.createElementNS(svgns, "linearGradient");
-        grad.setAttribute("id", gradId);
-        grad.setAttribute("x1","0"); grad.setAttribute("y1","0"); grad.setAttribute("x2","0"); grad.setAttribute("y2","1");
-        var stop1 = document.createElementNS(svgns,"stop"); stop1.setAttribute("offset","0%"); stop1.setAttribute("stop-color", s.color); stop1.setAttribute("stop-opacity","0.22");
-        var stop2 = document.createElementNS(svgns,"stop"); stop2.setAttribute("offset","100%"); stop2.setAttribute("stop-color", s.color); stop2.setAttribute("stop-opacity","0");
-        grad.appendChild(stop1); grad.appendChild(stop2);
-        defs.appendChild(grad); svg.appendChild(defs);
-
-        segs.forEach(function(seg){
-          if (seg.length < 2) return;
-          var linePath = "M" + seg.map(function(p){ return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" L");
-          var areaPath = linePath + " L" + seg[seg.length-1][0].toFixed(1) + "," + (padT+innerH) + " L" + seg[0][0].toFixed(1) + "," + (padT+innerH) + " Z";
-          var area = document.createElementNS(svgns, "path");
-          area.setAttribute("d", areaPath);
-          area.setAttribute("fill", "url(#"+gradId+")");
-          area.setAttribute("stroke", "none");
-          svg.appendChild(area);
-        });
-      }
-
-      segs.forEach(function(seg){
-        var d = seg.length === 1
-          ? "M" + seg[0][0].toFixed(1) + "," + seg[0][1].toFixed(1)
-          : "M" + seg.map(function(p){ return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" L");
-        var path = document.createElementNS(svgns, "path");
-        path.setAttribute("d", d);
-        path.setAttribute("fill", "none");
-        path.setAttribute("stroke", s.color);
-        path.setAttribute("stroke-width", "2.25");
-        path.setAttribute("stroke-linecap", "round");
-        path.setAttribute("stroke-linejoin", "round");
-        svg.appendChild(path);
-      });
-
-      var lastPt = lastNonNull(pts);
-      if (lastPt){
-        var endDot = document.createElementNS(svgns, "circle");
-        endDot.setAttribute("cx", lastPt[0]); endDot.setAttribute("cy", lastPt[1]);
-        endDot.setAttribute("r", "4.5");
-        endDot.setAttribute("fill", s.color);
-        endDot.setAttribute("stroke", cssVar("--surface"));
-        endDot.setAttribute("stroke-width", "2");
-        svg.appendChild(endDot);
-      }
-
-      s._pts = pts;
-    });
-
-    // hover layer
-    var hoverLine = document.createElementNS(svgns, "line");
-    hoverLine.setAttribute("y1", padT); hoverLine.setAttribute("y2", padT+innerH);
-    hoverLine.setAttribute("stroke", cssVar("--border-strong"));
-    hoverLine.setAttribute("stroke-width","1");
-    hoverLine.setAttribute("opacity","0");
-    svg.appendChild(hoverLine);
-
-    var hoverDots = series.map(function(s){
-      var c = document.createElementNS(svgns, "circle");
-      c.setAttribute("r","5"); c.setAttribute("fill", s.color);
-      c.setAttribute("stroke", cssVar("--surface")); c.setAttribute("stroke-width","2");
-      c.setAttribute("opacity","0");
-      svg.appendChild(c);
-      return c;
-    });
-
-    var overlay = document.createElementNS(svgns, "rect");
-    overlay.setAttribute("x", padL); overlay.setAttribute("y", padT);
-    overlay.setAttribute("width", innerW); overlay.setAttribute("height", innerH);
-    overlay.setAttribute("fill", "transparent");
-    svg.appendChild(overlay);
-
-    var chartWrap = el("div", "chart-wrap");
-    chartWrap.appendChild(svg);
-    var tooltip = el("div", "tooltip");
-    chartWrap.appendChild(tooltip);
-    container.appendChild(chartWrap);
-
-    overlay.addEventListener("mousemove", function(e){
-      var rect = svg.getBoundingClientRect();
-      var scaleX = w / rect.width;
-      var mx = (e.clientX - rect.left) * scaleX;
-      var idx = Math.round(((mx - padL) / innerW) * (labels.length-1));
-      idx = Math.max(0, Math.min(labels.length-1, idx));
-      var hx = xAt(idx);
-      hoverLine.setAttribute("x1", hx); hoverLine.setAttribute("x2", hx);
-      hoverLine.setAttribute("opacity","1");
-      var html = "<div style='font-weight:600;margin-bottom:3px;'>" + labels[idx] + "</div>";
-      var anyRow = false;
-      series.forEach(function(s, si){
-        var pt = s._pts[idx];
-        if (!pt){
-          hoverDots[si].setAttribute("opacity","0");
-          return;
-        }
-        anyRow = true;
-        hoverDots[si].setAttribute("cx", pt[0]); hoverDots[si].setAttribute("cy", pt[1]);
-        hoverDots[si].setAttribute("opacity","1");
-        var v = s.values[idx];
-        html += "<div class='t-row'><span class='t-swatch' style='background:"+s.color+"'></span>" +
-          s.name + ": <strong>" + (opts.yFormat ? opts.yFormat(v) : fmtInt(v)) + "</strong></div>";
-      });
-      tooltip.innerHTML = html;
-      tooltip.classList.toggle("visible", anyRow);
-      var boundRect = chartWrap.getBoundingClientRect();
-      var tipX = (hx/w) * boundRect.width;
-      tooltip.style.left = tipX + "px";
-      tooltip.style.top = "0px";
-    });
-    overlay.addEventListener("mouseleave", function(){
-      hoverLine.setAttribute("opacity","0");
-      hoverDots.forEach(function(d){ d.setAttribute("opacity","0"); });
-      tooltip.classList.remove("visible");
-    });
-  }
-
-  function buildMetricChart(container, siteList, metric, colorFor){
-    var perSite = siteList.map(function(s){ return pointsFor(s, metric, state.range); });
-    var grid = buildGrid(perSite);
-    if (!grid.length){
-      container.appendChild(el("div", "chart-empty",
-        "Ahrefs doesn&rsquo;t track this metric at daily resolution. Try 3M, 6M, 12M, or All."));
-      return;
-    }
-    var labels = grid.map(function(d){ return fmtPointLabel(d, rangeOpt(state.range).granularity, state.range); });
-    var series = siteList.map(function(s, i){
-      return { name: s.name, color: colorFor(s), values: alignToGrid(perSite[i], grid) };
-    });
-    buildLineChart(container, series, {
-      ariaLabel: (metric === "dr" ? "Domain rating" : "Organic traffic") + " trend",
-      yFormat: metric === "dr" ? function(v){ return fmtFixed(v, 0); } : fmtInt,
-      labels: labels
-    });
-  }
-
-  function renderSeoCharts(data, color){
-    var wrap = document.getElementById("seoCharts");
-    wrap.innerHTML = "";
-    var rangeText = RANGE_TEXT[state.range];
-    var combined = state.active === "all";
-    var siteList = combined ? SITES : [data];
-    var colorFor = combined ? function(s){ return cssVar(s.colorVar); } : function(){ return color; };
-
-    var card1 = el("div", "card");
-    card1.appendChild(el("div","card-title", combined
-      ? ("Organic traffic by site — " + rangeText)
-      : ("Organic traffic <span class='unit'>— " + rangeText + "</span>")));
-    buildMetricChart(card1, siteList, "traffic", colorFor);
-    wrap.appendChild(card1);
-
-    var card2 = el("div", "card");
-    card2.appendChild(el("div","card-title", combined
-      ? ("Domain Rating by site — " + rangeText)
-      : ("Domain Rating <span class='unit'>— " + rangeText + "</span>")));
-    buildMetricChart(card2, siteList, "dr", colorFor);
-    wrap.appendChild(card2);
-  }
-
-  function renderRangeTabs(){
-    renderMetricTabs(document.getElementById("rangeTabs"), RANGE_OPTIONS, state.range, function(key){
-      state.range = key;
-      render();
-    });
-  }
-
-  /* ---------- comparison bar charts (All Sites view) ---------- */
-  var SEO_METRICS = [
-    { key: "dr", label: "Domain Rating", format: function(v){return v.toFixed(0);}, get: function(s){return s.seo.dr;} },
-    { key: "traffic", label: "Organic Traffic", format: fmtInt, get: function(s){return s.seo.organicTraffic;} },
-    { key: "keywords", label: "Keywords", format: fmtInt, get: function(s){return s.seo.organicKeywords;} },
-    { key: "domains", label: "Ref. Domains", format: fmtInt, get: function(s){return s.seo.referringDomains;} }
-  ];
-
-  function renderMetricTabs(container, metrics, activeKey, onChange){
-    container.innerHTML = "";
-    metrics.forEach(function(m){
-      var tab = el("button", "metric-tab", m.label);
-      tab.setAttribute("aria-pressed", m.key === activeKey ? "true" : "false");
-      tab.addEventListener("click", function(){ onChange(m.key); });
-      container.appendChild(tab);
-    });
-  }
-
-  function renderBarCompare(container, metrics, activeKey){
-    var metric = metrics.filter(function(m){ return m.key === activeKey; })[0];
-    container.innerHTML = "";
-    var maxVal = Math.max.apply(null, SITES.map(metric.get));
-    SITES.slice().sort(function(a,b){ return metric.get(b) - metric.get(a); }).forEach(function(s){
-      var row = el("div","bar-row");
-      var label = el("div","bar-label");
-      label.innerHTML = '<span class="swatch" style="background:'+cssVar(s.colorVar)+'"></span>' + s.name;
-      row.appendChild(label);
-      var track = el("div","bar-track");
-      var fill = el("div","bar-fill");
-      var val = metric.get(s);
-      fill.style.width = (val/maxVal*100).toFixed(0) + "%";
-      fill.style.background = cssVar(s.colorVar);
-      track.appendChild(fill);
-      row.appendChild(track);
-      row.appendChild(el("div","bar-value", metric.format(val)));
-      container.appendChild(row);
-    });
-  }
-
-  var seoActiveMetric = "traffic";
-
-  function renderCompareCards(){
-    var seoCard = document.getElementById("compareCardSeo");
-    if (state.active === "all"){
-      seoCard.style.display = "";
-
-      renderMetricTabs(document.getElementById("seoMetricTabs"), SEO_METRICS, seoActiveMetric, function(key){
-        seoActiveMetric = key;
-        renderCompareCards();
-      });
-      renderBarCompare(document.getElementById("seoBars"), SEO_METRICS, seoActiveMetric);
-    } else {
-      seoCard.style.display = "none";
-    }
-  }
-
-  /* ---------- tables ---------- */
-  function renderKeywordsTable(data){
-    var tbody = document.querySelector("#keywordsTable tbody");
-    tbody.innerHTML = "";
-    document.getElementById("kwCol1").textContent = state.active === "all" ? "Top keyword (by site)" : "Top keyword";
-    if (!data.seo.keywords.length){
-      var emptyRow = document.createElement("tr");
-      emptyRow.innerHTML = "<td class='primary' colspan='4' style='color:var(--text-muted);font-weight:400;'>" +
-        (data.liveSeo ? "No ranking keywords yet — Ahrefs reports 0 organic keywords for this domain." : "No keyword data available.") +
-        "</td>";
-      tbody.appendChild(emptyRow);
-      return;
-    }
-    data.seo.keywords.slice(0,6).forEach(function(k){
-      var tr = document.createElement("tr");
-      var nameCell = "<td class='primary'>" + k.k + (k.site ? "<br><span class='site-tag'><span class='swatch' style='background:"+cssVar(k.site.colorVar)+"'></span>"+k.site.name+"</span>" : "") + "</td>";
-      tr.innerHTML = nameCell +
-        "<td class='num'><span class='pos-pill'>#"+k.pos+"</span></td>" +
-        "<td class='num'>" + fmtInt(k.vol) + "</td>" +
-        "<td class='num'>" + fmtInt(k.traffic) + "</td>";
-      tbody.appendChild(tr);
-    });
-  }
-
-  /* ---------- live Ahrefs data ---------- */
-  var lastGeneratedAt = null;
-
-  function formatAsOf(iso){
-    var d = iso ? new Date(iso) : new Date();
-    return new Intl.DateTimeFormat("en-US", {
-      month: "long", day: "numeric", year: "numeric",
-      hour: "numeric", minute: "2-digit",
-      timeZone: "America/Chicago", timeZoneName: "short"
-    }).format(d);
-  }
-
-  // Ahrefs returns full timestamps ("2026-10-01T00:00:00Z"); the charts and
-  // the sample data work with plain YYYY-MM-DD, so trim them on load.
-  function normalizeHistory(h){
-    ["daily","monthly"].forEach(function(g){
-      if (!h[g]) h[g] = { dr: [], traffic: [] };
-      ["dr","traffic"].forEach(function(m){
-        h[g][m] = (h[g][m] || []).map(function(p){ return { date: String(p.date).slice(0,10), value: p.value }; });
-      });
-    });
-    return h;
-  }
-  function loadLiveData(){
-    return fetch("data/latest.json", { cache: "no-store" })
-      .then(function(res){ if (!res.ok) throw new Error("no data file"); return res.json(); })
-      .then(function(payload){
-        lastGeneratedAt = (payload && payload.generatedAt) || null;
-        var sites = (payload && payload.sites) || {};
-        Object.keys(sites).forEach(function(id){
-          var site = siteById(id);
-          var live = sites[id];
-          if (!site || !live) return;
-          site.seo = {
-            dr: live.dr, organicTraffic: live.organicTraffic,
-            organicKeywords: live.organicKeywords, referringDomains: live.referringDomains,
-            keywords: live.keywords || [],
-            history: normalizeHistory(live.history || { daily: {dr:[],traffic:[]}, monthly: {dr:[],traffic:[]} })
-          };
-          site.liveSeo = true;
-          site.seoAsOf = live.asOf;
-        });
-      })
-      .catch(function(){ /* data/latest.json not available yet — keep sample data */ });
-  }
-
-  function updateSampleBanner(){
-    var liveNames = SITES.filter(function(s){ return s.liveSeo; }).map(function(s){ return s.name; });
-    var sampleNames = SITES.filter(function(s){ return !s.liveSeo; }).map(function(s){ return s.name; });
-    var text;
-    if (liveNames.length === SITES.length){
-      text = "<b>All live.</b> Every site&rsquo;s Search Visibility numbers are live from Ahrefs (refreshed daily, early morning CT).";
-    } else if (liveNames.length === 0){
-      text = "<b>Sample data.</b> No sites are connected to Ahrefs yet &mdash; all Search Visibility figures below are placeholders.";
-    } else {
-      text = "<b>Mixed data.</b> " + liveNames.join(" and ") + "&rsquo;s" +
-        " Search Visibility numbers are live from Ahrefs (refreshed daily, early morning CT). " +
-        (sampleNames.length === 1 ? sampleNames[0] + "&rsquo;s" : "The other " + sampleNames.length + " sites&rsquo;") +
-        " SEO figures are still sample data pending their Ahrefs connections.";
-    }
-    document.getElementById("sampleBannerText").innerHTML = text;
-  }
-
-  /* ---------- master render ---------- */
-  function setActive(id){
-    state.active = id;
-    updateSelectorPressed();
-    render();
-  }
-
-  function render(){
-    var data = state.active === "all" ? aggregate() : siteById(state.active);
-    var color = cssVar(data.colorVar);
-
-    var seoNote;
-    if (state.active === "all"){
-      var liveCount = SITES.filter(function(s){ return s.liveSeo; }).length;
-      seoNote = liveCount === 0 ? "Source: Ahrefs (sample)" :
-        liveCount === SITES.length ? "Source: Ahrefs · combined (all live)" :
-        "Source: Ahrefs · combined (" + liveCount + " of " + SITES.length + " sites live)";
-    } else if (data.liveSeo){
-      seoNote = "Source: Ahrefs · live, refreshed daily ~12:30am CT";
-    } else {
-      seoNote = "Source: Ahrefs (sample)";
-    }
-    document.getElementById("seoSourceNote").textContent = seoNote;
-
-    renderRangeTabs();
-    renderSeoKpis(data, color);
-    renderSeoCharts(data, color);
-    renderCompareCards();
-    renderKeywordsTable(data);
-  }
-
-  function init(){
-    document.getElementById("asOfDate").textContent = formatAsOf(null);
-    document.getElementById("footerSites").textContent = SITES.map(function(s){ return s.domain; }).join(" · ");
-    window.addEventListener("resize", function(){ /* svg is viewBox-scaled, no rebuild needed */ });
-    loadLiveData().then(function(){
-      document.getElementById("asOfDate").textContent = formatAsOf(lastGeneratedAt);
-      updateSampleBanner();
-      renderSelector();
-      render();
-    });
-    // repaint chart colours when the glass theme switches between light/dark tone
-    if (window.GlassTheme) window.GlassTheme.onChange(function(e){ if (e.toneChanged){ renderSelector(); render(); } });
-  }
-
-  if (document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
-})();
-</script>
-
+<script src="gsc-config.js"></script>
+<script src="assets/gsc-dashboard.js"></script>
 </body>
 </html>

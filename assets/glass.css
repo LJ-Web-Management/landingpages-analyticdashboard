@@ -108,9 +108,7 @@ html.glass body{ color: var(--g-text); min-height: 100vh; }
 #glass-bg[data-bg="pearl"] .b4{ width:30vw; height:30vw; left:50vw; top:25vh; background:#a8ffd9; opacity:.55; }
 
 /* ---------- the glass material ---------- */
-.glass-panel,
-html.glass .card, html.glass .kpi-tile, html.glass .table-wrap,
-html.glass .sample-banner, html.glass .metric-tabs, html.glass .site-chip{
+.glass-panel{
   position: relative;
   background:
     linear-gradient(var(--g-tint), var(--g-tint)),
@@ -128,15 +126,13 @@ html.glass .sample-banner, html.glass .metric-tabs, html.glass .site-chip{
 }
 .glass-panel{ border-radius: var(--glass-radius); }
 /* specular sheen + refractive rim */
-.glass-panel::before,
-html.glass .card::before, html.glass .kpi-tile::before, html.glass .table-wrap::before{
+.glass-panel::before{
   content:""; position:absolute; inset:0; border-radius: inherit; pointer-events:none; z-index:-1;
   background:
     radial-gradient(120% 60% at 0% 0%, rgba(255,255,255,0.22), transparent 55%),
     radial-gradient(80% 50% at 100% 100%, rgba(255,255,255,0.08), transparent 60%);
 }
-.glass-panel::after,
-html.glass .card::after, html.glass .kpi-tile::after, html.glass .table-wrap::after{
+.glass-panel::after{
   content:""; position:absolute; inset:0; border-radius: inherit; pointer-events:none;
   padding: 1px;
   background: linear-gradient(140deg, var(--g-edge) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 65%, var(--g-edge) 100%);
@@ -162,33 +158,6 @@ html.glass .card::after, html.glass .kpi-tile::after, html.glass .table-wrap::af
 .glass-btn:active{ transform: translateY(0) scale(.98); }
 .glass-btn.primary{ background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 70%, white 10%), color-mix(in srgb, var(--accent) 45%, transparent)); color:#fff; }
 .glass-btn svg{ width:16px; height:16px; flex:none; }
-
-/* ---------- existing (Ahrefs) page token overrides ---------- */
-html.glass{
-  --bg: transparent;
-  --surface: transparent;
-  --surface-2: rgba(255,255,255,0.10);
-  --surface-3: rgba(255,255,255,0.16);
-  --text-primary: var(--g-text);
-  --text-secondary: var(--g-text-2);
-  --text-muted: var(--g-text-3);
-  --border: var(--g-edge-soft);
-  --border-strong: var(--g-edge);
-  --grid-line: var(--g-grid);
-  --accent-soft: color-mix(in srgb, var(--accent) 20%, transparent);
-  --site-mold: var(--s1); --site-confined: var(--s2);
-  --site-excavation: var(--s3); --site-stormwater: var(--s4);
-  --delta-good: var(--good); --delta-bad: var(--bad);
-  --shadow: var(--g-shadow);
-}
-html.glass[data-tone="light"]{ --surface-2: rgba(255,255,255,0.45); --surface-3: rgba(255,255,255,0.6); }
-html.glass .card, html.glass .kpi-tile, html.glass .table-wrap{ border-radius: var(--glass-radius); }
-html.glass .site-chip{ border-radius: 999px; }
-html.glass .site-chip[aria-pressed="true"]{ background: var(--chip-color, var(--accent)); }
-html.glass thead th{ background: rgba(255,255,255,0.06); }
-html.glass .tooltip{ background: var(--g-tooltip-bg); color: var(--g-tooltip-text); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border:1px solid var(--g-edge-soft); }
-html.glass .metric-tab[aria-pressed="true"]{ background: var(--g-fill-strong); color: var(--g-text); }
-html.glass .masthead, html.glass footer{ border-color: var(--g-edge-soft); }
 
 /* ---------- Appearance panel ---------- */
 .appearance-fab{ position: fixed; right: 18px; bottom: 18px; z-index: 60; }
@@ -256,6 +225,6 @@ html.glass[data-tone="light"] .appearance-panel{ --g-tint: rgba(255,255,255,0.45
   #glass-bg .blob{ animation: none; }
 }
 @media (forced-colors: active){
-  .glass-panel, html.glass .card, html.glass .kpi-tile, html.glass .table-wrap{ border: 1px solid CanvasText; }
+  .glass-panel{ border: 1px solid CanvasText; }
 }
 a.glass-btn{ text-decoration: none; }

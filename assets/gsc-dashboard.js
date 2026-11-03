@@ -2,16 +2,12 @@
    - Demo mode: deterministic sample data so the page works before setup.
    - Shared mode: data/gsc/*.json written daily by the GitHub Action, so every
      visitor sees real data without signing in.
-   - Live mode: one or more Google accounts signed in via Google Identity Services
-     (webmasters.readonly) → Search Console API, called directly from the browser.
    Combining rules: clicks & impressions sum; CTR = Σclicks / Σimpressions;
    position = impression-weighted mean of each site's average position. */
 (function(){
   "use strict";
 
-  var API = "https://www.googleapis.com/webmasters/v3";
-  var SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";
-  var LS_SEL = "gsc.selected.v2", LS_CID = "gsc.clientId";
+  var LS_SEL = "gsc.selected.v2";
   var MAX_SLOTS = 8;  // categorical colour slots; more sites fold to "Other" in per-site charts
 
   var RANGES = [
@@ -26,7 +22,7 @@
   ];
 
   var state = {
-    mode: "demo",           // demo | shared | live
+    mode: "demo",           // demo | shared
     endDate: null,          // shared mode: last day in the synced data
     sites: [],              // [{ siteUrl, permissionLevel }]
     selected: [],           // siteUrls, in selection order
@@ -167,95 +163,10 @@
     });
   }
 
-  /* ================= live API (one or more Google accounts) ================= */
-  var LS_ACCTS = "gsc.accounts.v1";
-  state.accounts = [];   // [{ email, access_token, exp, sites: [{siteUrl, permissionLevel}] }]
-  function getClientId(){ return (window.GSC_CONFIG && window.GSC_CONFIG.clientId) || lsGet(LS_CID) || ""; }
-  function saveAccounts(){ lsSet(LS_ACCTS, JSON.stringify(state.accounts.map(function(a){ return { email: a.email, access_token: a.access_token, exp: a.exp }; }))); }
-  function restoreAccounts(){
-    var saved; try { saved = JSON.parse(lsGet(LS_ACCTS) || "[]"); } catch(e){ saved = []; }
-    state.accounts = (Array.isArray(saved) ? saved : []).filter(function(a){ return a && a.email; }).map(function(a){ return { email: a.email, access_token: a.access_token, exp: a.exp || 0, sites: [] }; });
-  }
-  function isActive(a){ return a.access_token && a.exp > Date.now(); }
-  var gisPromise;
-  function loadGis(){
-    if (gisPromise) return gisPromise;
-    gisPromise = new Promise(function(resolve, reject){
-      if (window.google && google.accounts && google.accounts.oauth2) return resolve();
-      var s = document.createElement("script"); s.src = "https://accounts.google.com/gsi/client"; s.async = true;
-      s.onload = function(){ resolve(); }; s.onerror = function(){ gisPromise = null; reject(new Error("Couldn't load Google sign-in.")); };
-      document.head.appendChild(s);
-    });
-    return gisPromise;
-  }
-  // hint = an email to re-authorise; no hint = let the user pick (or add) an account
-  function requestToken(hint){
-    return loadGis().then(function(){
-      return new Promise(function(resolve, reject){
-        var client = google.accounts.oauth2.initTokenClient({
-          client_id: getClientId(), scope: SCOPE + " email", hint: hint || undefined, login_hint: hint || undefined,
-          callback: function(resp){
-            if (resp.error) return reject(new Error(resp.error_description || resp.error));
-            if (google.accounts.oauth2.hasGrantedAllScopes && !google.accounts.oauth2.hasGrantedAllScopes(resp, SCOPE))
-              return reject(new Error("Search Console access wasn't granted. Tick the Search Console box when signing in."));
-            resolve({ access_token: resp.access_token, exp: Date.now() + (Number(resp.expires_in) || 3600) * 1000 - 60000 });
-          },
-          error_callback: function(err){ reject(new Error(err && err.message || "Sign-in was cancelled.")); }
-        });
-        client.requestAccessToken({ prompt: hint ? "" : "select_account" });
-      });
-    });
-  }
-  function authed(acct, url, body){
-    if (!isActive(acct)) return Promise.reject(new Error("The session for " + acct.email + " expired. Reconnect it from the Accounts menu."));
-    return fetch(url, {
-      method: body ? "POST" : "GET",
-      headers: Object.assign({ Authorization: "Bearer " + acct.access_token }, body ? { "Content-Type": "application/json" } : {}),
-      body: body ? JSON.stringify(body) : undefined
-    }).then(function(res){
-      if (res.status === 401){ acct.exp = 0; saveAccounts(); }
-      if (!res.ok) return res.json().catch(function(){ return {}; }).then(function(j){ throw new Error((j.error && j.error.message) || ("Google API error " + res.status)); });
-      return res.json();
-    });
-  }
-  function loadAccountSites(acct){
-    return authed(acct, API + "/sites").then(function(j){ acct.sites = j.siteEntry || []; return acct; });
-  }
-  function ownerOf(siteUrl){
-    return state.accounts.filter(function(a){ return isActive(a) && a.sites.some(function(s){ return s.siteUrl === siteUrl && s.permissionLevel !== "siteUnverifiedUser"; }); })[0];
-  }
-  // keep concurrent API calls modest (quota is per-user, per-site QPS)
-  var active = 0, queue = [];
-  function limited(fn){ return new Promise(function(res, rej){ queue.push({ fn: fn, res: res, rej: rej }); pump(); }); }
-  function pump(){ while (active < 4 && queue.length){ var j = queue.shift(); active++; j.fn().then(j.res, j.rej).then(function(){ active--; pump(); }); } }
-  function sa(siteUrl, body){
-    var acct = ownerOf(siteUrl);
-    if (!acct) return Promise.reject(new Error("No connected account can read " + shortSite(siteUrl) + "."));
-    return limited(function(){ return authed(acct, API + "/sites/" + encodeURIComponent(siteUrl) + "/searchAnalytics/query", Object.assign({ dataState: "all" }, body)); });
-  }
-  function rowsToItems(rows){ return (rows || []).map(function(r){ return { key: r.keys[0], clicks: r.clicks, impressions: r.impressions, position: r.position }; }); }
-  function liveDataset(siteUrl, range){
-    var w = windows(range);
-    return Promise.all([
-      sa(siteUrl, { startDate: w.pStart, endDate: w.end, dimensions: ["date"], rowLimit: 25000 }),
-      sa(siteUrl, { startDate: w.start, endDate: w.end, dimensions: ["query"], rowLimit: 500 }),
-      sa(siteUrl, { startDate: w.start, endDate: w.end, dimensions: ["page"], rowLimit: 250 }),
-      sa(siteUrl, { startDate: w.start, endDate: w.end, dimensions: ["country"], rowLimit: 60 }),
-      sa(siteUrl, { startDate: w.start, endDate: w.end, dimensions: ["device"], rowLimit: 10 })
-    ]).then(function(r){
-      var byDate = {}; (r[0].rows || []).forEach(function(row){ byDate[row.keys[0]] = row; });
-      return {
-        siteUrl: siteUrl, window: w,
-        series: dateList(w.pStart, w.end).map(function(d){ var p = byDate[d]; return { date: d, clicks: p ? p.clicks : 0, impressions: p ? p.impressions : 0, position: p ? p.position : 0 }; }),
-        queries: rowsToItems(r[1].rows), pages: rowsToItems(r[2].rows), countries: rowsToItems(r[3].rows), devices: rowsToItems(r[4].rows)
-      };
-    });
-  }
   function dataset(siteUrl){
     var k = state.mode + "|" + siteUrl + "|" + state.range;
     if (!cache[k]){
-      var load = state.mode === "demo" ? Promise.resolve(demoDataset(siteUrl, state.range))
-        : state.mode === "shared" ? sharedDataset(siteUrl, state.range) : liveDataset(siteUrl, state.range);
+      var load = state.mode === "demo" ? Promise.resolve(demoDataset(siteUrl, state.range)) : sharedDataset(siteUrl, state.range);
       cache[k] = load.catch(function(e){ delete cache[k]; throw e; });
     }
     return cache[k];
@@ -387,7 +298,7 @@
     Promise.all(state.selected.map(dataset)).then(function(sets){
       if (seq !== renderSeq) return;
       current = combine(sets); setLoading(false); paint();
-      $("footerStamp").textContent = ({ demo: "Demo data", shared: "Daily-synced Search Console data", live: "Live Search Console data" })[state.mode] + " · loaded " + new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+      $("footerStamp").textContent = (state.mode === "demo" ? "Demo data" : "Daily-synced Search Console data") + " · loaded " + new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
     }).catch(function(err){
       if (seq !== renderSeq) return;
       setLoading(false); toast(err.message || String(err), 6000); console.error(err);
@@ -602,7 +513,7 @@
     bars($("deviceBars"), current ? current.devices : [], function(k){ return k.charAt(0) + k.slice(1).toLowerCase(); }, 3);
   }
 
-  /* ================= modes: live (signed-in accounts) → shared (daily sync) → demo ================= */
+  /* ================= modes: shared (daily sync) → demo ================= */
   function loadSelection(){
     var saved; try { saved = JSON.parse(lsGet(LS_SEL + "." + state.mode) || "null"); } catch(e){}
     var usable = usableSites().map(function(s){ return s.siteUrl; });
@@ -610,17 +521,15 @@
     if (Array.isArray(saved) && saved.length && !state.selected.length) state.selected = usable.slice();
     state.slots = {}; assignSlots(); updateTrigger(); renderSiteList(); renderChips();
   }
-  function setSource(live, text, button){
-    $("sourcePill").classList.toggle("live", live); $("sourceText").textContent = text;
-    $("connectBtn").textContent = button;
+  function setSource(synced, text){
+    $("sourcePill").classList.toggle("live", synced); $("sourceText").textContent = text;
     $("demoBanner").hidden = state.mode !== "demo";
-    renderControls(); renderAccounts();
+    renderControls();
   }
-  function enterBase(){ return sharedIndex ? enterShared() : enterDemo(); }
   function enterDemo(){
     state.mode = "demo"; state.endDate = null;
     state.sites = DEMO_SITES.map(function(s){ return { siteUrl: s.siteUrl, permissionLevel: "siteOwner" }; });
-    setSource(false, "Demo data", "Connect Google");
+    setSource(false, "Demo data");
     loadSelection(); refresh();
   }
   function enterShared(){
@@ -628,103 +537,13 @@
     state.sites = sharedIndex.sites.map(function(s){ return { siteUrl: s.siteUrl, permissionLevel: s.permissionLevel || "siteOwner" }; })
       .sort(function(a, b){ return shortSite(a.siteUrl).localeCompare(shortSite(b.siteUrl)); });
     var when = sharedIndex.generatedAt ? new Date(sharedIndex.generatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
-    setSource(true, "Synced daily" + (when ? " · updated " + when : ""), state.accounts.length ? "Accounts (" + state.accounts.length + ")" : "Sign in for live data");
+    setSource(true, "Synced daily" + (when ? " · updated " + when : ""));
     loadSelection(); refresh();
-  }
-  function enterLive(){
-    var activeAccts = state.accounts.filter(isActive);
-    if (!activeAccts.length) return Promise.resolve(enterBase());
-    setLoading(true);
-    return Promise.all(activeAccts.map(function(a){ return loadAccountSites(a).catch(function(err){ toast(a.email + ": " + err.message, 6000); return a; }); })).then(function(){
-      state.mode = "live"; state.endDate = null;
-      var seen = {}; state.sites = [];
-      state.accounts.filter(isActive).forEach(function(a){ a.sites.forEach(function(s){
-        if (!seen[s.siteUrl] || (seen[s.siteUrl].permissionLevel === "siteUnverifiedUser" && s.permissionLevel !== "siteUnverifiedUser")){
-          if (seen[s.siteUrl]) state.sites.splice(state.sites.indexOf(seen[s.siteUrl]), 1);
-          seen[s.siteUrl] = s; state.sites.push(s);
-        }
-      }); });
-      state.sites.sort(function(a, b){ return shortSite(a.siteUrl).localeCompare(shortSite(b.siteUrl)); });
-      Object.keys(cache).forEach(function(k){ if (k.indexOf("live|") === 0) delete cache[k]; });
-      var n = state.accounts.filter(isActive).length;
-      setSource(true, "Live · " + n + " account" + (n === 1 ? "" : "s") + " · " + usableSites().length + " properties", "Accounts (" + state.accounts.length + ")");
-      if (!state.sites.length) toast("The connected accounts have no Search Console properties.", 6000);
-      loadSelection(); refresh();
-    });
-  }
-  function upsertAccount(tok){
-    return fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: "Bearer " + tok.access_token } })
-      .then(function(r){ return r.ok ? r.json() : {}; })
-      .then(function(info){
-        var email = info.email || ("Google account " + (state.accounts.length + 1));
-        var acct = state.accounts.filter(function(a){ return a.email === email; })[0];
-        if (!acct){ acct = { email: email, sites: [] }; state.accounts.push(acct); }
-        acct.access_token = tok.access_token; acct.exp = tok.exp;
-        saveAccounts(); return acct;
-      });
-  }
-  function addAccount(hint){
-    if (!getClientId()){ openSetup(); return; }
-    requestToken(hint).then(upsertAccount).then(function(acct){
-      return enterLive().then(function(){ toast((hint ? "Reconnected " : "Added ") + acct.email); });
-    }).catch(function(err){ toast(err.message || String(err), 6000); });
-  }
-  function removeAccount(email){
-    var acct = state.accounts.filter(function(a){ return a.email === email; })[0]; if (!acct) return;
-    if (acct.access_token && window.google && google.accounts && google.accounts.oauth2) try { google.accounts.oauth2.revoke(acct.access_token, function(){}); } catch(e){}
-    state.accounts = state.accounts.filter(function(a){ return a !== acct; }); saveAccounts();
-    toast("Removed " + email);
-    enterLive();
-  }
-  function renderAccounts(){
-    var list = $("acctList"); if (!list) return;
-    list.innerHTML = state.accounts.length ? state.accounts.map(function(a){
-      var ok = isActive(a);
-      return '<li class="acct-item"><div class="acct-main"><span class="acct-email">' + esc(a.email) + '</span>' +
-        '<span class="acct-meta">' + (ok ? a.sites.length + " properties" : "Session expired") + '</span></div>' +
-        (ok ? "" : '<button type="button" class="acct-act" data-reconnect="' + esc(a.email) + '">Reconnect</button>') +
-        '<button type="button" class="acct-x" data-remove-acct="' + esc(a.email) + '" aria-label="Remove ' + esc(a.email) + '">×</button></li>';
-    }).join("") : '<li class="ms-empty">No accounts connected in this browser.</li>';
-    $("acctShared").hidden = !(state.mode === "live" && sharedIndex);
-    $("acctNote").textContent = sharedIndex
-      ? "Signed-in accounts are only visible in this browser. Everyone else sees the daily-synced data."
-      : "Signed-in accounts are only visible in this browser.";
-  }
-  function openSetup(){
-    $("originHint").textContent = location.origin && location.origin !== "null" ? location.origin : "your site's origin (e.g. https://you.github.io)";
-    $("clientIdInput").value = lsGet(LS_CID) || "";
-    var d = $("setupDlg"); if (d.showModal) d.showModal(); else d.setAttribute("open", "");
-  }
-  function wireSetup(){
-    var d = $("setupDlg"), pop = $("acctPop"), btn = $("connectBtn");
-    $("dlgCancel").addEventListener("click", function(){ d.close(); });
-    $("dlgSave").addEventListener("click", function(){
-      var v = $("clientIdInput").value.trim();
-      if (!/\.apps\.googleusercontent\.com$/.test(v)){ toast("That doesn't look like an OAuth Client ID (…apps.googleusercontent.com)."); return; }
-      lsSet(LS_CID, v); d.close(); addAccount();
-    });
-    function openPop(v){ pop.classList.toggle("open", v); btn.setAttribute("aria-expanded", String(v)); if (v) renderAccounts(); }
-    btn.addEventListener("click", function(e){
-      e.stopPropagation();
-      if (!state.accounts.length){ addAccount(); return; }
-      openPop(!pop.classList.contains("open"));
-    });
-    // ignore clicks on nodes a re-render just removed (e.g. an account's × button)
-    document.addEventListener("click", function(e){ if (e.target.isConnected && !$("acctMenu").contains(e.target)) openPop(false); });
-    document.addEventListener("keydown", function(e){ if (e.key === "Escape" && pop.classList.contains("open")){ openPop(false); btn.focus(); } });
-    $("acctAdd").addEventListener("click", function(){ openPop(false); addAccount(); });
-    $("acctShared").addEventListener("click", function(){ openPop(false); enterBase(); });
-    $("acctList").addEventListener("click", function(e){
-      var r = e.target.closest("[data-reconnect]"), x = e.target.closest("[data-remove-acct]");
-      if (r){ openPop(false); addAccount(r.getAttribute("data-reconnect")); }
-      if (x) removeAccount(x.getAttribute("data-remove-acct"));
-    });
-    $("bannerConnect").addEventListener("click", function(){ addAccount(); });
   }
 
   /* ================= boot ================= */
   function boot(){
-    wireMultiSelect(); wireSetup(); renderControls();
+    wireMultiSelect(); renderControls();
     $("qSearch").addEventListener("input", function(){ state.qLimit = 15; renderQueries(); });
     $("pSearch").addEventListener("input", function(){ state.pLimit = 15; renderPages(); });
     $("qMore").addEventListener("click", function(){ state.qLimit += 25; renderQueries(); });
@@ -732,12 +551,9 @@
     var rt; window.addEventListener("resize", function(){ clearTimeout(rt); rt = setTimeout(renderTrend, 120); });
     if (window.GlassTheme) GlassTheme.onChange(function(){ renderChips(); paint(); });
 
-    restoreAccounts();
     loadSharedIndex().then(function(idx){
       sharedIndex = idx;
-      // accounts signed in within the last hour resume without a popup
-      if (state.accounts.some(isActive)) enterLive().catch(function(){ enterBase(); });
-      else enterBase();
+      if (sharedIndex) enterShared(); else enterDemo();
     });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();

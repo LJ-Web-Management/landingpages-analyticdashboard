@@ -3,7 +3,7 @@
    Exposes window.GlassTheme.onChange(fn) so pages can repaint charts when the tone flips. */
 (function(){
   "use strict";
-  var KEY = "glassTheme.v1";
+  var KEY = "glassTheme.v2";   // v2: default switched to white; resets earlier saved choices once
   var PRESETS = [
     { id: "aurora", name: "Aurora", tone: "dark" },
     { id: "sunset", name: "Sunset", tone: "dark" },
@@ -28,7 +28,7 @@
     { id: "home-night",    name: "Home Night",    avg: "#3d3931", scrim: 0.16 }
   ];
   function photoOf(bg){ var id = String(bg).replace(/^photo:/, ""); return /^photo:/.test(bg) ? PHOTOS.filter(function(p){ return p.id === id; })[0] : null; }
-  var defaults = { bg: "aurora", solid: "#2b4c7e", blur: 22 };
+  var defaults = { bg: "solid", solid: "#ffffff", blur: 22 };
   var settings = load();
   var listeners = [];
   var root = document.documentElement;

@@ -5,12 +5,9 @@ across any mix of properties: pick sites from the multi-select and see their
 combined clicks, impressions, CTR and impression-weighted position, with trends,
 per-site breakdown, and merged top queries, pages, countries and devices.
 
-The page shows data from the first of these that is available:
-
-1. **Live**: Google accounts signed in *in this browser* (Accounts menu → add as many as you like).
-2. **Shared**: data synced daily by a GitHub Action from one or more Google accounts.
-   **Everyone who opens the dashboard sees this, with no sign-in.**
-3. **Demo**: sample data, shown until one of the above is set up.
+The page shows the data synced daily by a GitHub Action from one or more
+Google accounts. **Everyone who opens the dashboard sees it, with no sign-in.**
+Until the first sync has run, it shows sample (demo) data.
 
 > **Privacy:** shared data is committed to `data/gsc/` in this repo and served by
 > GitHub Pages. If the repo or the Pages site is public, anyone with the link can
@@ -59,15 +56,6 @@ Optional: to limit which properties are synced, add a repository **variable** `G
 Then go to **Actions → Sync Search Console data → Run workflow**. After that it runs
 every day at 09:23 UTC. A property visible to several accounts is fetched once.
 
-## Browser sign-in (live view, optional)
-
-The **Connect Google** / **Accounts** button signs Google accounts in for *your
-browser only*. This needs an OAuth client of type **Web application** with your
-Pages URL (e.g. `https://lj-web-management.github.io`) under *Authorized
-JavaScript origins*. Put its client ID in `gsc-config.js`, or paste it into the
-dialog when you click Connect. Google sign-in sessions last about an hour; after
-that, use **Reconnect** in the Accounts menu.
-
 ## Files
 
 | Path | What it is |
@@ -75,7 +63,6 @@ that, use **Reconnect** in the Accounts menu.
 | `index.html` | the dashboard |
 | `assets/gsc-dashboard.js` | data loading, combining, charts |
 | `assets/glass.css`, `assets/glass-theme.js` | liquid glass theme and Appearance panel |
-| `gsc-config.js` | browser sign-in client ID |
 | `scripts/fetch-gsc.mjs` | daily sync (run by `.github/workflows/fetch-gsc-data.yml`) |
 | `scripts/get-refresh-token.mjs` | helper to add a Google account to the sync |
 | `data/gsc/` | synced data (written by the workflow) |

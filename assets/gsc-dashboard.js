@@ -11,7 +11,7 @@
 
   var API = "https://www.googleapis.com/webmasters/v3";
   var SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";
-  var LS_SEL = "gsc.selected.v1", LS_CID = "gsc.clientId";
+  var LS_SEL = "gsc.selected.v2", LS_CID = "gsc.clientId";
   var MAX_SLOTS = 8;  // categorical colour slots; more sites fold to "Other" in per-site charts
 
   var RANGES = [
@@ -387,7 +387,7 @@
     Promise.all(state.selected.map(dataset)).then(function(sets){
       if (seq !== renderSeq) return;
       current = combine(sets); setLoading(false); paint();
-      $("footerStamp").textContent = (state.mode === "demo" ? "Demo data" : "Live Search Console data") + " · loaded " + new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+      $("footerStamp").textContent = ({ demo: "Demo data", shared: "Daily-synced Search Console data", live: "Live Search Console data" })[state.mode] + " · loaded " + new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
     }).catch(function(err){
       if (seq !== renderSeq) return;
       setLoading(false); toast(err.message || String(err), 6000); console.error(err);
@@ -466,7 +466,12 @@
         }) });
       }
     }
-    var b = bucketize(current.dates, series.map(function(s){ return s.points; }));
+    // start the chart where the selected sites first have data, rather than
+    // drawing a long flat line for days before they were in Search Console
+    var first = 0;
+    while (first < current.series.length - 2 && !current.series[first].impressions) first++;
+    var dates = current.dates.slice(first);
+    var b = bucketize(dates, series.map(function(s){ return s.points.slice(first); }));
     series.forEach(function(s, i){ s.values = b.pts[i].map(function(p){ var v = p[state.metric]; return state.metric === "position" && !p.impressions ? null : v; }); });
     legend.innerHTML = series.length > 1 ? series.map(function(s){ return '<span><i style="background:' + s.color + '"></i>' + esc(s.name) + '</span>'; }).join("") : "";
     lineChart(box, b.labels, series, m, b.weekly);
@@ -580,7 +585,7 @@
       return '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + (current.perSite.length > 1 ? '<span style="opacity:.6">' + esc(host) + '</span>' : '') + esc(path) + '</a>';
     }, "Page");
   }
-  var A3 = { usa:"US", can:"CA", gbr:"GB", ind:"IN", aus:"AU", phl:"PH", mex:"MX", pri:"PR", zaf:"ZA", deu:"DE", fra:"FR", esp:"ES", ita:"IT", bra:"BR", nld:"NL", irl:"IE", nzl:"NZ", sgp:"SG", pak:"PK", nga:"NG", are:"AE", sau:"SA", jpn:"JP", kor:"KR", chn:"CN", col:"CO", arg:"AR", chl:"CL", per:"PE", tto:"TT", jam:"JM", kny:"KE", ken:"KE", gha:"GH", egy:"EG", tur:"TR", pol:"PL", swe:"SE", nor:"NO", dnk:"DK", fin:"FI", bel:"BE", che:"CH", aut:"AT", prt:"PT", grc:"GR", isr:"IL", mys:"MY", idn:"ID", tha:"TH", vnm:"VN", bgd:"BD", lka:"LK", dom:"DO", gtm:"GT", hnd:"HN", slv:"SV", cri:"CR", pan:"PA", ecu:"EC", ven:"VE", qat:"QA", kwt:"KW", omn:"OM", bhr:"BH", hkg:"HK", twn:"TW", rus:"RU", ukr:"UA", rou:"RO", cze:"CZ", hun:"HU" };
+  var A3 = { usa:"US", can:"CA", gbr:"GB", ind:"IN", aus:"AU", phl:"PH", mex:"MX", pri:"PR", zaf:"ZA", deu:"DE", fra:"FR", esp:"ES", ita:"IT", bra:"BR", nld:"NL", irl:"IE", nzl:"NZ", sgp:"SG", pak:"PK", nga:"NG", are:"AE", sau:"SA", jpn:"JP", kor:"KR", chn:"CN", col:"CO", arg:"AR", chl:"CL", per:"PE", tto:"TT", jam:"JM", kny:"KE", ken:"KE", gha:"GH", egy:"EG", tur:"TR", pol:"PL", swe:"SE", nor:"NO", dnk:"DK", fin:"FI", bel:"BE", che:"CH", aut:"AT", prt:"PT", grc:"GR", isr:"IL", mys:"MY", idn:"ID", tha:"TH", vnm:"VN", bgd:"BD", lka:"LK", dom:"DO", gtm:"GT", hnd:"HN", slv:"SV", cri:"CR", pan:"PA", ecu:"EC", ven:"VE", qat:"QA", kwt:"KW", omn:"OM", bhr:"BH", hkg:"HK", gum:"GU", vir:"VI", asm:"AS", mnp:"MP", bhs:"BS", brb:"BB", blz:"BZ", nic:"NI", pry:"PY", ury:"UY", bol:"BO", cub:"CU", hti:"HT", mar:"MA", dza:"DZ", tun:"TN", eth:"ET", uga:"UG", tza:"TZ", zwe:"ZW", zmb:"ZM", cmr:"CM", npl:"NP", mmr:"MM", khm:"KH", irn:"IR", irq:"IQ", jor:"JO", lbn:"LB", isl:"IS", lux:"LU", hrv:"HR", srb:"RS", svk:"SK", svn:"SI", bgr:"BG", ltu:"LT", lva:"LV", est:"EE", cyp:"CY", mlt:"MT", geo:"GE", arm:"AM", aze:"AZ", kaz:"KZ", uzb:"UZ", fji:"FJ", png:"PG", twn:"TW", rus:"RU", ukr:"UA", rou:"RO", cze:"CZ", hun:"HU" };
   var regionNames; try { regionNames = new Intl.DisplayNames(["en"], { type: "region" }); } catch(e){}
   function countryName(c){ var a2 = A3[String(c).toLowerCase()]; try { return a2 && regionNames ? regionNames.of(a2) : String(c).toUpperCase(); } catch(e){ return String(c).toUpperCase(); } }
   function bars(el, items, labelFn, max){
@@ -601,8 +606,8 @@
   function loadSelection(){
     var saved; try { saved = JSON.parse(lsGet(LS_SEL + "." + state.mode) || "null"); } catch(e){}
     var usable = usableSites().map(function(s){ return s.siteUrl; });
-    state.selected = Array.isArray(saved) ? saved.filter(function(u){ return usable.indexOf(u) !== -1; }) : usable.slice(0, MAX_SLOTS);
-    if (Array.isArray(saved) && saved.length && !state.selected.length) state.selected = usable.slice(0, MAX_SLOTS);
+    state.selected = Array.isArray(saved) ? saved.filter(function(u){ return usable.indexOf(u) !== -1; }) : usable.slice();
+    if (Array.isArray(saved) && saved.length && !state.selected.length) state.selected = usable.slice();
     state.slots = {}; assignSlots(); updateTrigger(); renderSiteList(); renderChips();
   }
   function setSource(live, text, button){

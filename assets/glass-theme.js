@@ -10,6 +10,24 @@
     { id: "pearl",  name: "Pearl",  tone: "light" },
     { id: "solid",  name: "Solid",  tone: null }
   ];
+  // Photo backgrounds live in assets/backgrounds/ (full size) and
+  // assets/backgrounds/thumbs/ (picker). avg = fallback colour while loading;
+  // scrim = how much the photo is darkened so white text stays readable.
+  var PHOTO_BASE = (function(){
+    try { return new URL("backgrounds/", document.currentScript.src).href; } catch(e){ return "assets/backgrounds/"; }
+  })();
+  var PHOTOS = [
+    { id: "alpine-lake",   name: "Alpine Lake",   avg: "#617373", scrim: 0.34 },
+    { id: "coast",         name: "Coast",         avg: "#958a7b", scrim: 0.40 },
+    { id: "forest",        name: "Forest",        avg: "#546331", scrim: 0.26 },
+    { id: "farm-day",      name: "Farm",          avg: "#7f7b5d", scrim: 0.36 },
+    { id: "city-day",      name: "City Day",      avg: "#799298", scrim: 0.40 },
+    { id: "city-night",    name: "City Night",    avg: "#3f495c", scrim: 0.18 },
+    { id: "highway-day",   name: "Highway Day",   avg: "#796c6d", scrim: 0.34 },
+    { id: "highway-night", name: "Highway Night", avg: "#413a4b", scrim: 0.16 },
+    { id: "home-night",    name: "Home Night",    avg: "#3d3931", scrim: 0.16 }
+  ];
+  function photoOf(bg){ var id = String(bg).replace(/^photo:/, ""); return /^photo:/.test(bg) ? PHOTOS.filter(function(p){ return p.id === id; })[0] : null; }
   var defaults = { bg: "aurora", solid: "#2b4c7e", blur: 22 };
   var settings = load();
   var listeners = [];
@@ -17,7 +35,11 @@
   root.classList.add("glass");
 
   function load(){
-    try { var s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && s.bg) return Object.assign({}, defaults, s); } catch(e){}
+    try {
+      var s = JSON.parse(localStorage.getItem(KEY) || "null");
+      var known = s && s.bg && (photoOf(s.bg) || PRESETS.some(function(p){ return p.id === s.bg; }));
+      if (known) return Object.assign({}, defaults, s);
+    } catch(e){}
     return Object.assign({}, defaults);
   }
   function save(){ try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch(e){} }
@@ -52,14 +74,20 @@
   bg.innerHTML = '<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div><div class="grain"></div>';
 
   function currentTone(){
+    if (photoOf(settings.bg)) return "dark";
     if (settings.bg !== "solid") return PRESETS.filter(function(p){ return p.id === settings.bg; })[0].tone;
     var rgb = hexToRgb(settings.solid) || {r:0,g:0,b:0};
     return luminance(rgb) > 0.36 ? "light" : "dark";
   }
   function apply(){
-    bg.setAttribute("data-bg", settings.bg);
+    var photo = photoOf(settings.bg);
+    bg.setAttribute("data-bg", photo ? "photo" : settings.bg);
+    root.setAttribute("data-bg-kind", photo ? "photo" : settings.bg === "solid" ? "solid" : "gradient");
     bg.style.setProperty("--bg-solid", settings.solid);
-    if (settings.bg === "solid"){
+    if (photo){
+      bg.style.background = "linear-gradient(rgba(6,8,18," + photo.scrim + "), rgba(6,8,18," + (photo.scrim + 0.08).toFixed(2) + ")), " +
+        'url("' + PHOTO_BASE + photo.id + '.webp") center / cover no-repeat, ' + photo.avg;
+    } else if (settings.bg === "solid"){
       // a soft vignette keeps glass edges readable on flat colour
       bg.style.background = "radial-gradient(120% 90% at 30% 0%, rgba(255,255,255,0.16), transparent 60%), radial-gradient(100% 80% at 100% 100%, rgba(0,0,0,0.22), transparent 60%), " + settings.solid;
     } else bg.style.background = "";
@@ -69,7 +97,7 @@
     root.style.setProperty("--glass-blur", settings.blur + "px");
     var meta = document.querySelector('meta[name="theme-color"]');
     if (!meta){ meta = document.createElement("meta"); meta.name = "theme-color"; document.head.appendChild(meta); }
-    meta.content = settings.bg === "solid" ? settings.solid : ({aurora:"#0a0c1f", sunset:"#6b1d4f", pearl:"#f4f1ff"})[settings.bg];
+    meta.content = photo ? photo.avg : settings.bg === "solid" ? settings.solid : ({aurora:"#0a0c1f", sunset:"#6b1d4f", pearl:"#f4f1ff"})[settings.bg];
     listeners.forEach(function(fn){ try { fn({ tone: tone, toneChanged: changed, settings: settings }); } catch(e){ console.error(e); } });
   }
 
@@ -91,6 +119,11 @@
       '<div class="ap-label">Background</div>' +
       '<div class="ap-presets">' + PRESETS.map(function(p){
         return '<button type="button" class="ap-preset" data-bg="' + p.id + '" aria-pressed="false"><span>' + p.name + '</span></button>';
+      }).join("") + '</div>' +
+      '<div class="ap-label">Photos</div>' +
+      '<div class="ap-photos">' + PHOTOS.map(function(p){
+        return '<button type="button" class="ap-preset ap-photo" data-bg="photo:' + p.id + '" aria-pressed="false" ' +
+          'style="background-image:url(&quot;' + PHOTO_BASE + 'thumbs/' + p.id + '.webp&quot;);background-color:' + p.avg + '"><span>' + p.name + '</span></button>';
       }).join("") + '</div>' +
       '<div class="ap-solid" id="apSolid">' +
         '<div class="ap-label">Solid colour</div>' +

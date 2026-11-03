@@ -107,6 +107,11 @@ html.glass body{ color: var(--g-text); min-height: 100vh; }
 #glass-bg[data-bg="pearl"] .b3{ width:48vw; height:48vw; left:20vw; bottom:-25vw; background:#ffc2a8; opacity:.75; }
 #glass-bg[data-bg="pearl"] .b4{ width:30vw; height:30vw; left:50vw; top:25vh; background:#a8ffd9; opacity:.55; }
 
+/* Photo backgrounds: the image is set inline by glass-theme.js */
+#glass-bg[data-bg="photo"] .blob, #glass-bg[data-bg="photo"] .grain{ display: none; }
+/* busier backgrounds get a slightly denser glass so text stays readable */
+html.glass[data-bg-kind="photo"]{ --g-tint: rgba(8,10,22,0.30); }
+
 /* ---------- the glass material ---------- */
 .glass-panel{
   position: relative;
@@ -194,6 +199,9 @@ html.glass[data-tone="light"] .appearance-panel{ --g-tint: rgba(255,255,255,0.45
 .ap-preset[data-bg="pearl"] span{ color:#0e1220; background: rgba(255,255,255,.45); }
 .ap-preset[data-bg="solid"]{ background: conic-gradient(from 0deg, #f33, #fd3, #3f6, #3df, #63f, #f3d, #f33); }
 
+.ap-photos{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ap-preset.ap-photo{ aspect-ratio: 16 / 10; background-size: cover; background-position: center; }
+.ap-preset.ap-photo span{ font-size: 10px; padding: 3px 0 4px; }
 .ap-solid{ display:none; margin-top: 4px; }
 .ap-solid.show{ display:block; }
 .ap-wheel-wrap{ position: relative; width: 220px; height: 220px; margin: 6px auto 0; touch-action: none; }

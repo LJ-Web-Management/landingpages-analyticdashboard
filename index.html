@@ -467,6 +467,8 @@
     *{ transition: none !important; animation: none !important; }
   }
 </style>
+<link rel="stylesheet" href="assets/glass.css">
+<script src="assets/glass-theme.js"></script>
 </head>
 <body>
 
@@ -478,6 +480,7 @@
       <h1>Site Performance Console</h1>
     </div>
     <div class="masthead-meta">
+      <a class="glass-btn" href="search-console.html" style="margin-bottom:10px;">Search Console dashboard →</a><br>
       Tracking <strong>4 sites</strong> &middot; last updated <strong id="asOfDate">—</strong>
     </div>
   </div>
@@ -674,7 +677,7 @@
     return grid.map(function(d){ return alignPoint(pts, d); });
   }
   function fmtPointLabel(iso, granularity, rangeKey){
-    var d = new Date(iso + "T00:00:00Z");
+    var d = new Date(String(iso).slice(0,10) + "T00:00:00Z");
     if (granularity === "daily"){
       return new Intl.DateTimeFormat("en-US", { month:"short", day:"numeric", timeZone:"UTC" }).format(d);
     }
@@ -1150,6 +1153,17 @@
     }).format(d);
   }
 
+  // Ahrefs returns full timestamps ("2026-10-01T00:00:00Z"); the charts and
+  // the sample data work with plain YYYY-MM-DD, so trim them on load.
+  function normalizeHistory(h){
+    ["daily","monthly"].forEach(function(g){
+      if (!h[g]) h[g] = { dr: [], traffic: [] };
+      ["dr","traffic"].forEach(function(m){
+        h[g][m] = (h[g][m] || []).map(function(p){ return { date: String(p.date).slice(0,10), value: p.value }; });
+      });
+    });
+    return h;
+  }
   function loadLiveData(){
     return fetch("data/latest.json", { cache: "no-store" })
       .then(function(res){ if (!res.ok) throw new Error("no data file"); return res.json(); })
@@ -1164,7 +1178,7 @@
             dr: live.dr, organicTraffic: live.organicTraffic,
             organicKeywords: live.organicKeywords, referringDomains: live.referringDomains,
             keywords: live.keywords || [],
-            history: live.history || { daily: {dr:[],traffic:[]}, monthly: {dr:[],traffic:[]} }
+            history: normalizeHistory(live.history || { daily: {dr:[],traffic:[]}, monthly: {dr:[],traffic:[]} })
           };
           site.liveSeo = true;
           site.seoAsOf = live.asOf;
@@ -1231,6 +1245,8 @@
       renderSelector();
       render();
     });
+    // repaint chart colours when the glass theme switches between light/dark tone
+    if (window.GlassTheme) window.GlassTheme.onChange(function(e){ if (e.toneChanged){ renderSelector(); render(); } });
   }
 
   if (document.readyState === "loading"){

@@ -1,85 +1,85 @@
 {
-  "generatedAt": "2026-11-03T20:27:21.060Z",
-  "endDate": "2026-11-01",
+  "generatedAt": "2026-11-04T17:23:39.350Z",
+  "endDate": "2026-11-02",
   "accounts": 1,
   "sites": [
     {
       "siteUrl": "sc-domain:ai-skills.work",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-ai-skills-work.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:confined-space.com",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-confined-space-com.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:datacentertraining.us",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-datacentertraining-us.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:eldttraining.us",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-eldttraining-us.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:excavationtrenchingshoring.com",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-excavationtrenchingshoring-com.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:hazwoperosha.com",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-hazwoperosha-com.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:hazwoperosha.org",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-hazwoperosha-org.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:hazwoperosha.us",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-hazwoperosha-us.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:ictraining.us",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-ictraining-us.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:ljwebmanagement.com",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-ljwebmanagement-com.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:moldtraining.us",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-moldtraining-us.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:oshawithzahid.com",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-oshawithzahid-com.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     },
     {
       "siteUrl": "sc-domain:stormwaterplanning.us",
       "permissionLevel": "siteRestrictedUser",
       "file": "domain-stormwaterplanning-us.json",
-      "endDate": "2026-11-01"
+      "endDate": "2026-11-02"
     }
   ]
 }
